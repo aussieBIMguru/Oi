@@ -40,6 +40,44 @@ namespace Oi.Commands.Cmds_Delete
     /// A command.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
+    public class Cmd_ProtectionReview : IExternalCommand
+    {
+        /// <summary>
+        /// Execute the command.
+        /// </summary>
+        /// <param name="commandData">Command related data.</param>
+        /// <param name="message">Command related message.</param>
+        /// <param name="elements">Command related elements.</param>
+        /// <returns>A Result.</returns>
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            // Get the UIDocument and Document
+            UIDocument uidoc = commandData.Application.ActiveUIDocument;
+            Document doc = uidoc.Document;
+
+            // Get selected Element(s)
+            List<ElementId> protectedIds = uidoc.Selection.GetElementIds()
+                .Where(id => Schemas.DeleteSchemaManager.IsProtected(doc, id))
+                .ToList();
+
+            // Early return if no protection
+            if (!protectedIds.Any())
+            {
+                Forms.FormCallers.Message($"Selected Element(s) are not protected.");
+                return Result.Succeeded;
+            }
+
+            // Run the protection review form
+            List<ProtectionReviewItem> reviewItems = Schemas.DeleteSchemaManager.GetProtectionReviewItems(doc, protectedIds);
+            Forms.FormCallers.ReviewProtection(reviewItems, bypassable: false);
+            return Result.Succeeded;
+        }
+    }
+
+    /// <summary>
+    /// A command.
+    /// </summary>
+    [Transaction(TransactionMode.Manual)]
     public class Cmd_ProtectSelectedElements : IExternalCommand
     {
         /// <summary>

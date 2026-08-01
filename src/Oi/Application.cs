@@ -27,7 +27,9 @@ namespace Oi
             // Register Failure definitions and Schemas
             // Note: FailureDefinitions have to be defined in startup
             _ = Failures.DeleteFailure.Definition;
+            _ = Failures.ModifyFailure.Definition;
             Schemas.DeleteSchemaManager.Register(uiCtlApp);
+            // Schemas.ModifySchemaManager.Register(uiCtlApp);
 
             // No tools ribbon if the user is not admin approved
             // This is also establishes the addin folder in AppData regardless
@@ -50,7 +52,8 @@ namespace Oi
             // Add the administator panel
             RibbonPanel panel = uiCtlApp.Ext_AddRibbonPanelToTab(Globals.ADDIN_NAME, "Tools");
 
-            // Admin dropdown
+            // Admin dropdown and about button
+            panel.Ext_AddPushButton<Commands.Cmds_Admin.Cmd_About>(buttonName: "About", availability: AVNA.ZeroDoc);
             PulldownButton pullDownAdmin = panel.Ext_AddPulldownButton(buttonName: "Admin", 
                 nameSpace: $"{Globals.ADDIN_NAME}.Commands.Cmds_Admin");
 
@@ -65,12 +68,21 @@ namespace Oi
             PulldownButton pullDownDelete = panel.Ext_AddPulldownButton(buttonName: "Deletion",
                 nameSpace: $"{Globals.ADDIN_NAME}.Commands.Cmds_Delete");
 
-            pullDownDelete.Ext_AddPushButton<Commands.Cmds_Delete.Cmd_SelectProtectedElements>(buttonName: "Select", availability: AVNA.Project);
-            panel.AddSeparator();
+            pullDownDelete.Ext_AddPushButton<Commands.Cmds_Delete.Cmd_SelectProtectedElements>(buttonName: "Select protected Elements", availability: AVNA.Project);
+            pullDownDelete.Ext_AddPushButton<Commands.Cmds_Delete.Cmd_ProtectionReview>(buttonName: "Review selected Elements", availability: AVNA.Selection);
+            pullDownDelete.AddSeparator();
             pullDownDelete.Ext_AddPushButton<Commands.Cmds_Delete.Cmd_ProtectSelectedElements>(buttonName: "Protect selected Elements", availability: AVNA.Selection);
             pullDownDelete.Ext_AddPushButton<Commands.Cmds_Delete.Cmd_UnprotectSelectedElements>(buttonName: "Unprotect selected Elements", availability: AVNA.Selection);
 
-            // STILL TO ADD: EDITING PROTECTION TOOLS
+            // Add modification protection tools
+            PulldownButton pullDownModify = panel.Ext_AddPulldownButton(buttonName: "Modify",
+                nameSpace: $"{Globals.ADDIN_NAME}.Commands.Cmds_Modify");
+
+            pullDownModify.Ext_AddPushButton<Commands.Cmds_Modify.Cmd_SelectProtectedElements>(buttonName: "Select protected Elements", availability: AVNA.Project);
+            pullDownModify.Ext_AddPushButton<Commands.Cmds_Modify.Cmd_ProtectionReview>(buttonName: "Review selected Elements", availability: AVNA.Selection);
+            pullDownModify.AddSeparator();
+            pullDownModify.Ext_AddPushButton<Commands.Cmds_Modify.Cmd_ProtectSelectedElements>(buttonName: "Protect selected Elements", availability: AVNA.Selection);
+            pullDownModify.Ext_AddPushButton<Commands.Cmds_Modify.Cmd_UnprotectSelectedElements>(buttonName: "Unprotect selected Elements", availability: AVNA.Selection);
 
             // Return succeeded
             return Result.Succeeded;
@@ -84,8 +96,6 @@ namespace Oi
         /// </summary>
         public Result OnShutdown(UIControlledApplication uiCtlApp)
         {
-            // Add unsubscribers here
-
             // Return succeeded
             return Result.Succeeded;
         }

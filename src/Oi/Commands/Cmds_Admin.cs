@@ -5,6 +5,36 @@ namespace Oi.Commands.Cmds_Admin
     /// A sample command.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
+    public class Cmd_About : IExternalCommand
+    {
+        /// <summary>
+        /// Execute the command.
+        /// </summary>
+        /// <param name="commandData">Command related data.</param>
+        /// <param name="message">Command related message.</param>
+        /// <param name="elements">Command related elements.</param>
+        /// <returns>A Result.</returns>
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            string formMessage = $"Oi!\n\nThanks for using {Globals.ADDIN_NAME} for Revit!\n\n" +
+                $"This is a simple set of tools that introduce Element deletion and " +
+                $"modification systems, as well as an admin system to manage and bypass it.\n\n" +
+                $"This tool is produced under an MIT license, with source code available on github.\n\n" +
+                $"Would you like to open the Github page?";
+            
+            if (Forms.FormCallers.MessageYesNo(formMessage))
+            {
+                UtilFil.OpenLinkPath(@"https://github.com/aussieBIMguru/Oi");
+            }
+
+            return Result.Succeeded;
+        }
+    }
+
+    /// <summary>
+    /// A sample command.
+    /// </summary>
+    [Transaction(TransactionMode.Manual)]
     public class Cmd_SelfAppointAsAdmin : IExternalCommand
     {
         /// <summary>
