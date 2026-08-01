@@ -27,6 +27,23 @@ namespace Oi.Forms
         }
 
         /// <summary>
+        /// Displays a protection review form showing protected elements
+        /// before allowing the user to proceed with a bypass request.
+        /// </summary>
+        /// <param name="items">The protected element information to display.</param>
+        /// <param name="message">Optional message to user.</param>
+        /// <param name="bypassable">Will the task proceed to bypass.</param>
+        /// <returns>
+        /// <see langword="true"/> if the user made it through bypass.
+        /// otherwise, <see langword="false"/>.
+        /// </returns>
+        public static bool ReviewProtection(List<ProtectionReviewItem> items, string message = null, bool bypassable = true)
+        {
+            ProtectionReview form = new ProtectionReview(items, message, bypassable);
+            return form.ShowDialog() == true && form.ContinueToBypass;
+        }
+
+        /// <summary>
         /// Provides a bypass code entry form.
         /// </summary>
         /// <param name="protectedIds">The Elements to bypass.</param>
