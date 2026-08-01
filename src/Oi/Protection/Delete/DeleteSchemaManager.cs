@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.DB.ExtensibleStorage;
+using Oi.Documents;
 
 namespace Oi.Schemas
 {
@@ -14,11 +15,13 @@ namespace Oi.Schemas
         /// </summary>
         private const string SchemaName = "Oi_DeleteSchema";
 
+
         /// <summary>
         /// The unique identifier of the Extensible Storage schema.
         /// </summary>
         private static readonly Guid SchemaGuid =
             new Guid("05FD7CCE-4E95-4D02-A80A-54A94334C9A8");
+
 
         /// <summary>
         /// Cached protection information grouped by document and element.
@@ -27,20 +30,12 @@ namespace Oi.Schemas
         private static readonly Dictionary<Document, Dictionary<ElementId, ProtectionReviewItem>>
             ProtectedElementsByDocument = new();
 
+
         /// <summary>
         /// The identifier of the updater responsible for monitoring protected deletions.
         /// </summary>
         private static UpdaterId IUpdaterId;
 
-        /// <summary>
-        /// Handles document opened events to rebuild the protection cache.
-        /// </summary>
-        private static EventHandler<DocumentOpenedEventArgs>? _documentOpenedHandler;
-
-        /// <summary>
-        /// Handles document closing events to remove cached protection data.
-        /// </summary>
-        private static EventHandler<DocumentClosingEventArgs>? _documentClosingHandler;
 
         /// <summary>
         /// Registers the deletion protection updater and document event handlers.
@@ -50,22 +45,24 @@ namespace Oi.Schemas
         {
             AddInId addinId = app.ActiveAddInId;
 
+
             var updater = new IUpdaters.DeleteIUpdater(addinId);
 
+
             UpdaterRegistry.RegisterUpdater(updater);
+
 
             IUpdaterId = updater.GetUpdaterId();
 
 
-            _documentOpenedHandler = OnDocumentOpened;
-            _documentClosingHandler = OnDocumentClosing;
+            DocumentRegistry.DocumentOpened += OnDocumentOpened;
+            DocumentRegistry.DocumentClosing += OnDocumentClosing;
 
-            app.ControlledApplication.DocumentOpened += _documentOpenedHandler;
-            app.ControlledApplication.DocumentClosing += _documentClosingHandler;
 
             app.ControlledApplication.DocumentSynchronizedWithCentral += OnDocumentChanged;
             app.ControlledApplication.DocumentReloadedLatest += OnDocumentChanged;
         }
+
 
         /// <summary>
         /// Unregisters the deletion protection updater and document event handlers.
@@ -78,16 +75,18 @@ namespace Oi.Schemas
                 UpdaterRegistry.UnregisterUpdater(IUpdaterId);
             }
 
-            if (_documentOpenedHandler != null)
-            {
-                app.ControlledApplication.DocumentOpened -= _documentOpenedHandler;
-            }
 
-            if (_documentClosingHandler != null)
-            {
-                app.ControlledApplication.DocumentClosing -= _documentClosingHandler;
-            }
+            DocumentRegistry.DocumentOpened -= OnDocumentOpened;
+            DocumentRegistry.DocumentClosing -= OnDocumentClosing;
+
+
+            app.ControlledApplication.DocumentSynchronizedWithCentral -= OnDocumentChanged;
+            app.ControlledApplication.DocumentReloadedLatest -= OnDocumentChanged;
+
+
+            ProtectedElementsByDocument.Clear();
         }
+
 
         /// <summary>
         /// Refreshes the protection cache when a document is opened.
@@ -101,6 +100,7 @@ namespace Oi.Schemas
             RefreshCache(args.Document);
         }
 
+
         /// <summary>
         /// Removes cached protection information when a document is closed.
         /// </summary>
@@ -111,7 +111,10 @@ namespace Oi.Schemas
             DocumentClosingEventArgs args)
         {
             ProtectedElementsByDocument.Remove(args.Document);
+
+            SyncTriggers();
         }
+
 
         /// <summary>
         /// Refreshes cached protection information after document changes that may
@@ -123,11 +126,19 @@ namespace Oi.Schemas
             object sender,
             EventArgs args)
         {
-            if (args is DocumentSynchronizedWithCentralEventArgs sync)
+            switch (args)
             {
-                RefreshCache(sync.Document);
+                case DocumentSynchronizedWithCentralEventArgs sync:
+                    RefreshCache(sync.Document);
+                    break;
+
+
+                case DocumentReloadedLatestEventArgs reload:
+                    RefreshCache(reload.Document);
+                    break;
             }
         }
+
 
         /// <summary>
         /// Gets the deletion protection schema, creating it if it does not already exist.
@@ -143,21 +154,27 @@ namespace Oi.Schemas
 
             SchemaBuilder builder = new SchemaBuilder(SchemaGuid);
 
+
             builder.SetReadAccessLevel(AccessLevel.Public);
             builder.SetWriteAccessLevel(AccessLevel.Public);
 
+
             builder.SetSchemaName(SchemaName);
+
 
             builder.SetDocumentation(
                 "Marks an Element as protected from being deleted from the Document.");
+
 
             builder.AddSimpleField("ProtectionStatus", typeof(string));
             builder.AddSimpleField("ProtectedBy", typeof(string));
             builder.AddSimpleField("ProtectedOn", typeof(string));
             builder.AddSimpleField("ProtectionReason", typeof(string));
 
+
             return builder.Finish();
         }
+
 
         /// <summary>
         /// Marks an element as protected from deletion and stores the protection metadata.
@@ -182,17 +199,21 @@ namespace Oi.Schemas
 
             Entity entity = new Entity(schema);
 
+
             entity.Set(
                 schema.GetField(Fields.Status),
                 Status.Protected);
+
 
             entity.Set(
                 schema.GetField(Fields.ProtectedBy),
                 protectedBy);
 
+
             entity.Set(
                 schema.GetField(Fields.ProtectedOn),
                 protectedDate.ToString("O"));
+
 
             entity.Set(
                 schema.GetField(Fields.Reason),
@@ -219,8 +240,9 @@ namespace Oi.Schemas
                 };
 
 
-            SyncTriggers(element.Document);
+            SyncTriggers();
         }
+
 
         /// <summary>
         /// Removes deletion protection from an element and clears its cached information.
@@ -238,18 +260,13 @@ namespace Oi.Schemas
                 .Remove(element.Id);
 
 
-            SyncTriggers(element.Document);
+            SyncTriggers();
         }
+
 
         /// <summary>
         /// Determines whether an element is currently protected.
         /// </summary>
-        /// <param name="doc">The document containing the element.</param>
-        /// <param name="id">The identifier of the element.</param>
-        /// <returns>
-        /// <see langword="true"/> if the element is protected; otherwise,
-        /// <see langword="false"/>.
-        /// </returns>
         public static bool IsProtected(
             Document doc,
             ElementId id)
@@ -258,14 +275,10 @@ namespace Oi.Schemas
                 && cache.ContainsKey(id);
         }
 
+
         /// <summary>
-        /// Gets cached protection review information for the specified elements.
+        /// Gets cached protection review information for specified elements.
         /// </summary>
-        /// <param name="doc">The document containing the elements.</param>
-        /// <param name="ids">The identifiers of the protected elements.</param>
-        /// <returns>
-        /// A collection of protection information suitable for display to the user.
-        /// </returns>
         public static List<ProtectionReviewItem> GetProtectionReviewItems(
             Document doc,
             IEnumerable<ElementId> ids)
@@ -283,10 +296,10 @@ namespace Oi.Schemas
                 .ToList();
         }
 
+
         /// <summary>
-        /// Rebuilds the protection cache by scanning the document for protected elements.
+        /// Rebuilds the protection cache by scanning the document.
         /// </summary>
-        /// <param name="doc">The document to refresh.</param>
         public static void RefreshCache(Document doc)
         {
             Dictionary<ElementId, ProtectionReviewItem> cache = new();
@@ -305,7 +318,9 @@ namespace Oi.Schemas
                         continue;
                     }
 
+
                     Protection.DeleteProtectionInfo info = new();
+
 
                     if (info.TryGetProtection(element))
                     {
@@ -323,16 +338,14 @@ namespace Oi.Schemas
 
             ProtectedElementsByDocument[doc] = cache;
 
-            SyncTriggers(doc);
+
+            SyncTriggers();
         }
+
 
         /// <summary>
         /// Gets all cached protected element identifiers in the specified document.
         /// </summary>
-        /// <param name="doc">The document containing the protected elements.</param>
-        /// <returns>
-        /// The identifiers of all currently protected elements.
-        /// </returns>
         public static IReadOnlyCollection<ElementId> GetProtectedElementIds(Document doc)
         {
             return ProtectedElementsByDocument.TryGetValue(doc, out var cache)
@@ -340,39 +353,56 @@ namespace Oi.Schemas
                 : Array.Empty<ElementId>();
         }
 
+
         /// <summary>
-        /// Gets the cached protection information for a document,
-        /// creating a new cache if required.
+        /// Gets or creates the protection cache for a document.
         /// </summary>
-        /// <param name="doc">The document to retrieve the cache for.</param>
-        /// <returns>The document protection cache.</returns>
-        private static Dictionary<ElementId, ProtectionReviewItem> GetOrCreateProtectionCache(Document doc)
+        private static Dictionary<ElementId, ProtectionReviewItem> GetOrCreateProtectionCache(
+            Document doc)
         {
             if (!ProtectedElementsByDocument.TryGetValue(doc, out var cache))
             {
                 cache = new Dictionary<ElementId, ProtectionReviewItem>();
+
                 ProtectedElementsByDocument[doc] = cache;
             }
 
             return cache;
         }
 
+
         /// <summary>
-        /// Synchronizes the deletion updater triggers with the currently protected elements.
+        /// Synchronizes deletion updater triggers for all open documents.
         /// </summary>
-        /// <param name="doc">The document whose triggers should be updated.</param>
-        private static void SyncTriggers(Document doc)
+        private static void SyncTriggers()
         {
             if (IUpdaterId == null)
             {
                 return;
             }
 
-            UpdaterRegistry.AddTrigger(
-                IUpdaterId,
-                doc,
-                GetProtectedElementIds(doc).ToList(),
-                Element.GetChangeTypeElementDeletion());
+
+            UpdaterRegistry.RemoveAllTriggers(IUpdaterId);
+
+
+            foreach (Document document in DocumentRegistry.OpenDocuments)
+            {
+                IReadOnlyCollection<ElementId> ids =
+                    GetProtectedElementIds(document);
+
+
+                if (ids.Count == 0)
+                {
+                    continue;
+                }
+
+
+                UpdaterRegistry.AddTrigger(
+                    IUpdaterId,
+                    document,
+                    ids.ToList(),
+                    Element.GetChangeTypeElementDeletion());
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using AVNA = Oi.Availability.AvailabilityNames;
+﻿using Oi.Documents;
+using Oi.Schemas;
+using AVNA = Oi.Availability.AvailabilityNames;
 
 // The class belongs to the root namespace
 namespace Oi
@@ -23,6 +25,8 @@ namespace Oi
             Globals.UICTLAPP = uiCtlApp;
             Globals.UICTLAPP.Idling += OnIdling;
             Globals.RegisterTooltips($"{Globals.ADDIN_NAME}.Resources.Files.Tooltips");
+
+            DocumentRegistry.Register(uiCtlApp);
 
             // Register Failure definitions and Schemas
             // Note: FailureDefinitions have to be defined in startup
@@ -96,6 +100,9 @@ namespace Oi
         /// </summary>
         public Result OnShutdown(UIControlledApplication uiCtlApp)
         {
+            Schemas.DeleteSchemaManager.Unregister(uiCtlApp);
+            DocumentRegistry.Unregister(uiCtlApp);
+
             // Return succeeded
             return Result.Succeeded;
         }
@@ -111,8 +118,20 @@ namespace Oi
         {
             if (sender is UIApplication uiApp)
             {
+                // Catch UIApplication
                 Globals.UICTLAPP.Idling -= OnIdling;
                 Globals.UIAPP = uiApp;
+
+                // Initialize the registry of documents currently open in Revit
+                // so schema managers can synchronize their updater triggers.
+                DocumentRegistry.Initialize(uiApp);
+
+                // (Re)build protection caches for documents already open before
+                // the add-in initialized.
+                foreach (Document doc in DocumentRegistry.OpenDocuments)
+                {
+                    DeleteSchemaManager.RefreshCache(doc);
+                }
             }
         }
     }
