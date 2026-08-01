@@ -141,4 +141,88 @@
                 Value="Italic"/>
     </Style>
 
+    <!-- DataGrid Column Header -->
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="Background"
+                Value="{StaticResource BackgroundBrush}"/>
+        <Setter Property="Foreground"
+                Value="{StaticResource ForegroundBrush}"/>
+        <Setter Property="FontWeight"
+                Value="SemiBold"/>
+        <Setter Property="Padding"
+                Value="8,6"/>
+        <Setter Property="BorderBrush"
+                Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness"
+                Value="0,0,1,1"/>
+    </Style>
+
+
+    <!-- DataGrid Cell -->
+    <Style TargetType="{x:Type DataGridCell}">
+
+        <Setter Property="Background"
+            Value="{StaticResource PanelBrush}"/>
+
+        <Setter Property="Foreground"
+            Value="{StaticResource ForegroundBrush}"/>
+
+        <Setter Property="Padding"
+            Value="8,5"/>
+
+        <Setter Property="BorderThickness"
+            Value="0"/>
+
+        <Style.Triggers>
+
+            <Trigger Property="IsSelected"
+                 Value="True">
+                <Setter Property="Background"
+                    Value="{StaticResource AccentBrush}"/>
+                <Setter Property="Foreground"
+                    Value="White"/>
+            </Trigger>
+
+        </Style.Triggers>
+
+    </Style>
+
+
+    <!-- DataGrid Row -->
+    <Style TargetType="{x:Type DataGridRow}">
+        <Setter Property="Background"
+            Value="{StaticResource PanelBrush}"/>
+
+        <Setter Property="Foreground"
+            Value="{StaticResource ForegroundBrush}"/>
+
+        <Setter Property="MinHeight"
+            Value="32"/>
+
+        <Style.Triggers>
+
+            <Trigger Property="IsMouseOver"
+                 Value="True">
+                <Setter Property="Background"
+                    Value="{StaticResource AccentHoverBrush}"/>
+            </Trigger>
+
+            <Trigger Property="IsSelected"
+                 Value="True">
+                <Setter Property="Background"
+                    Value="{StaticResource AccentBrush}"/>
+                <Setter Property="Foreground"
+                    Value="White"/>
+            </Trigger>
+
+        </Style.Triggers>
+    </Style>
+
+
+    <!-- DataGrid ScrollBar -->
+    <Style TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background"
+                Value="{StaticResource PanelBrush}"/>
+    </Style>
+
 </ResourceDictionary>
