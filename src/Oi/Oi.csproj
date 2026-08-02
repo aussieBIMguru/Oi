@@ -84,11 +84,13 @@
 	<ItemGroup>
 		<None Remove="Resources\Icons16\*.png" />
 		<None Remove="Resources\Icons32\*.png" />
+		<None Remove="Resources\Icons96\*.png" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\Icons16\*.png" />
 		<EmbeddedResource Include="Resources\Icons32\*.png" />
+		<EmbeddedResource Include="Resources\Icons96\*.png" />
 	</ItemGroup>
 
 	<ItemGroup>

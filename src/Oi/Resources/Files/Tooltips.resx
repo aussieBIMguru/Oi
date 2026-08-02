@@ -117,16 +117,57 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Example" xml:space="preserve">
-    <value>Example of a tooltip.</value>
+  <data name="Admin_About" xml:space="preserve">
+    <value>Displays basic information about the AddIn, and provides a means to directly access the related project GitHub.</value>
   </data>
-  <data name="Example_TestButton1" xml:space="preserve">
-    <value>Example of a tooltip.</value>
+  <data name="Admin_GetAdminCode" xml:space="preserve">
+    <value>Provides a form to enter a user's name and get the corresponding request response code that Oi will look for in that user's Local AppData folder when Revit launches.</value>
   </data>
-  <data name="Example_TestButton2" xml:space="preserve">
-    <value>Example of a tooltip.</value>
+  <data name="Admin_GetBypassCode" xml:space="preserve">
+    <value>Provides a form to enter a bypass request code, which will generate a response code that can be used to enable the protection bypass.
+
+Note that this code will be unique to the Elements involved in the request, so will only work for the specific bypass being attempted.</value>
   </data>
-  <data name="Example_TestButton3" xml:space="preserve">
-    <value>Example of a tooltip.</value>
+  <data name="Admin_SelfAppointAsAdmin" xml:space="preserve">
+    <value>Registers you as an Administrator, which will write a request response code to your Local AppData folder. When Revit boots up, Oi will look at this folder to determine if a user is an Administrator.
+
+If this file is not found with a valid code, Oi will load in low trust mode without access to its Tools ribbon.</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Tools related to administrating access to Oi's Tab, and permitting user's to bypass protection when required.</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Tools related to protecting Elements from deletion.</value>
+  </data>
+  <data name="Modify" xml:space="preserve">
+    <value>Tools related to protecting Elements from modification. Note that Elements protected in this way can still be deleted unless they also have Delete protection applied.</value>
+  </data>
+  <data name="Delete_SelectProtectedElements" xml:space="preserve">
+    <value>Selects all Elements in the current Document that currently have protection applied from being deleted.</value>
+  </data>
+  <data name="Modify_SelectProtectedElements" xml:space="preserve">
+    <value>Selects all Elements in the current Document that currently have protection applied from being modified.</value>
+  </data>
+  <data name="Delete_ProtectionReview" xml:space="preserve">
+    <value>Displays a form that provides information about protected Elements in the current Document, including when, who and why the Elements were protected.
+
+This form will be presented to users if they attempt to delete protected Elements as well.</value>
+  </data>
+  <data name="Modify_ProtectionReview" xml:space="preserve">
+    <value>Displays a form that provides information about protected Elements in the current Document, including when, who and why the Elements were protected.
+
+This form will be presented to users if they attempt to modify protected Elements as well.</value>
+  </data>
+  <data name="Delete_ProtectSelectedElements" xml:space="preserve">
+    <value>Applies protection to any selected Element(s) without it currently of this type. You will be prompted to also provide a basic summary of the purpose of protection, so that end users have a better understanding of why they may encounter prevention mechanisms in future.</value>
+  </data>
+  <data name="Modify_ProtectSelectedElements" xml:space="preserve">
+    <value>Applies protection to any selected Element(s) without it currently of this type. You will be prompted to also provide a basic summary of the purpose of protection, so that end users have a better understanding of why they may encounter prevention mechanisms in future.</value>
+  </data>
+  <data name="Delete_UnprotectSelectedElements" xml:space="preserve">
+    <value>Removes protection from any selected Element(s) with it currently of this type. This tool can only be ran by administrators as it does not trigger a bypass code to be validated unlike if an end user tries to bypass protection when offered.</value>
+  </data>
+  <data name="Modify_UnprotectSelectedElements" xml:space="preserve">
+    <value>Removes protection from any selected Element(s) with it currently of this type. This tool can only be ran by administrators as it does not trigger a bypass code to be validated unlike if an end user tries to bypass protection when offered.</value>
   </data>
 </root>

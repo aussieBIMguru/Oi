@@ -2,7 +2,7 @@
     x:Class="Oi.Forms.ProtectionReview"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Width="700"
+    Width="900"
     Height="450"
     ResizeMode="CanResizeWithGrip"
     Style="{DynamicResource Style_Window}"
@@ -53,22 +53,22 @@
                 <DataGridTextColumn
                     Header="Category"
                     Binding="{Binding Category}"
-                    Width="120"/>
+                    Width="*"/>
 
                 <DataGridTextColumn
                     Header="Protected By"
                     Binding="{Binding Protection.ProtectedBy}"
-                    Width="120"/>
+                    Width="*"/>
 
                 <DataGridTextColumn
                     Header="Protected On"
                     Binding="{Binding Protection.ProtectedOn}"
-                    Width="130"/>
+                    Width="*"/>
 
                 <DataGridTextColumn
                     Header="Reason"
                     Binding="{Binding Protection.Reason}"
-                    Width="200"/>
+                    Width="*"/>
 
             </DataGrid.Columns>
 
