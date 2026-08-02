@@ -1572,6 +1572,11 @@
              failed operations.
              </summary>
         </member>
+        <member name="F:Oi.Protection.SchemaManager`2.BypassedIds">
+            <summary>
+            Elements permitted for bypass by the user on a session basis.
+            </summary>
+        </member>
         <member name="P:Oi.Protection.SchemaManager`2.UpdaterId">
              <summary>
              The identifier of the IUpdater responsible for enforcing this
@@ -1750,6 +1755,23 @@
              This uses the cache rather than querying Extensible Storage because
              this method is expected to be called frequently by updaters.
              </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.AddBypass(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.ElementId)">
+            <summary>
+            Adds an element to the session bypass list.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.AddBypass(Autodesk.Revit.DB.Document,System.Collections.Generic.List{Autodesk.Revit.DB.ElementId})">
+            <summary>
+            Adds elements to the session bypass list.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.HasBypassAuthorization(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.ElementId)">
+            <summary>
+            Determines whether a specific element is currently bypassed.
+            
+            This is a per user/model session override only.
+            </summary>
         </member>
         <member name="M:Oi.Protection.SchemaManager`2.GetProtectionReviewItems(Autodesk.Revit.DB.Document,System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.ElementId})">
             <summary>
