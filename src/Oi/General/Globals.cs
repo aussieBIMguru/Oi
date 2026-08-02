@@ -163,7 +163,7 @@ namespace Oi
         /// <summary>
         /// A dictionary containing all tooltips by command key.
         /// </summary>
-        public static Dictionary<string, string> DICT_TOOLTIPS { get; } = new();
+        public static Dictionary<string, string> DICT_TOOLTIPS { get; } = [];
 
         /// <summary>
         /// Sets up the Global tooltips dictionary.
@@ -175,13 +175,12 @@ namespace Oi
             var resourceManager = new ResourceManager(resourcePath, ADDIN_ASSEMBLY);
 
             // Get all tooltip entries, store globally
-            using (ResourceSet resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true))
+            using ResourceSet resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentCulture, true, true);
+
+            foreach (DictionaryEntry entry in resourceSet)
             {
-                foreach (DictionaryEntry entry in resourceSet)
-                {
-                    string key = entry.Key.ToString();
-                    DICT_TOOLTIPS[key] = entry.Value.ToString();
-                }
+                string key = entry.Key.ToString();
+                DICT_TOOLTIPS[key] = entry.Value.ToString();
             }
         }
 

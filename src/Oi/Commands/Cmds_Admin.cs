@@ -1,8 +1,7 @@
-﻿// The class belongs to the Commands namespace
-namespace Oi.Commands.Cmds_Admin
+﻿namespace Oi.Commands.Cmds_Admin
 {
     /// <summary>
-    /// A sample command.
+    /// Provides information about Oi.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_About : IExternalCommand
@@ -32,7 +31,7 @@ namespace Oi.Commands.Cmds_Admin
     }
 
     /// <summary>
-    /// A sample command.
+    /// Allows someone to self appoint themselves in Debug mode.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_SelfAppointAsAdmin : IExternalCommand
@@ -71,7 +70,7 @@ namespace Oi.Commands.Cmds_Admin
     }
 
     /// <summary>
-    /// A sample command.
+    /// Runs the form to get an admin appointment code.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_GetAdminCode : IExternalCommand
@@ -91,7 +90,7 @@ namespace Oi.Commands.Cmds_Admin
     }
 
     /// <summary>
-    /// A sample command.
+    /// Runs the form to get a bypass code from a request code.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_GetBypassCode : IExternalCommand

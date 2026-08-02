@@ -30,11 +30,10 @@
         </Grid.RowDefinitions>
 
         <!-- Message -->
-        <TextBox x:Name="MessageTextBox"
+        <TextBlock x:Name="MessageTextBox"
                  Grid.Row="0"
                  Text="{Binding Message, Mode=OneWay}"
                  TextWrapping="Wrap"
-                 IsReadOnly="True"
                  Margin="0,0,0,12"/>
 
         <!-- Call / Response, buttons on the right sized to fit the largest -->

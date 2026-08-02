@@ -1,5 +1,4 @@
-﻿// The class belongs to the Utilities namespace
-namespace Oi.Utilities
+﻿namespace Oi.Utilities
 {
     /// <summary>
     /// Static methods container related to Data containers.

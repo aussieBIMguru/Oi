@@ -1,14 +1,13 @@
-﻿// The class belongs to the Commands namespace
-namespace Oi.Commands.Cmds_Delete
+﻿namespace Oi.Commands.Cmds_Delete
 {
     /// <summary>
-    /// A sample command.
+    /// Selects any protected Elements by the related Schema in the current Document.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_SelectProtectedElements : IExternalCommand
     {
         /// <summary>
-        /// Execute the command.
+        /// Selects all protected Elements in the current Document.
         /// </summary>
         /// <param name="commandData">Command related data.</param>
         /// <param name="message">Command related message.</param>
@@ -21,7 +20,7 @@ namespace Oi.Commands.Cmds_Delete
             Document doc = uidoc.Document;
 
             // Get the protected Elements
-            var protectedIds = Schemas.DeleteSchemaManager.GetProtectedElementIds(doc);
+            var protectedIds = Protection.ManagerRegistry.DeleteSchemaManager.GetProtectedElementIds(doc);
 
             // Early return if none were found
             if (protectedIds.Count == 0)
@@ -30,14 +29,14 @@ namespace Oi.Commands.Cmds_Delete
                 return Result.Succeeded;
             }
 
-
+            // Set selection to protected Elements
             uidoc.Selection.SetElementIds(protectedIds.ToList());
             return Result.Succeeded;
         }
     }
 
     /// <summary>
-    /// A command.
+    /// Launches a detailed review window regarding the nature of protection on selected Elements.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_ProtectionReview : IExternalCommand
@@ -57,25 +56,25 @@ namespace Oi.Commands.Cmds_Delete
 
             // Get selected Element(s)
             List<ElementId> protectedIds = uidoc.Selection.GetElementIds()
-                .Where(id => Schemas.DeleteSchemaManager.IsProtected(doc, id))
+                .Where(id => Protection.ManagerRegistry.DeleteSchemaManager.IsProtected(doc, id))
                 .ToList();
 
             // Early return if no protection
-            if (!protectedIds.Any())
+            if (protectedIds.Count == 0)
             {
                 Forms.FormCallers.Message($"Selected Element(s) are not protected.");
                 return Result.Succeeded;
             }
 
             // Run the protection review form
-            List<ProtectionReviewItem> reviewItems = Schemas.DeleteSchemaManager.GetProtectionReviewItems(doc, protectedIds);
+            List<ProtectionReviewItem> reviewItems = Protection.ManagerRegistry.DeleteSchemaManager.GetProtectionReviewItems(doc, protectedIds);
             Forms.FormCallers.ReviewProtection(reviewItems, bypassable: false);
             return Result.Succeeded;
         }
     }
 
     /// <summary>
-    /// A command.
+    /// Adds protection to selected Elements.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_ProtectSelectedElements : IExternalCommand
@@ -93,39 +92,42 @@ namespace Oi.Commands.Cmds_Delete
             UIDocument uidoc = commandData.Application.ActiveUIDocument;
             Document doc = uidoc.Document;
 
-            // Get selected Element(s)
-            List<Element> selectedElements = uidoc.Ext_SelectedElements();
+            // Get selected Element(s) without protection
+            List<Element> unprotectedElements = uidoc.Ext_SelectedElements()
+                .Where(e => !Protection.ManagerRegistry.DeleteSchemaManager.IsProtected(doc, e.Id))
+                .ToList();
 
-            // Track newly protected Elements
-            int protectedCount = 0;
+            // Early return if already protected
+            if (unprotectedElements.Count == 0)
+            {
+                Forms.FormCallers.Message("All Element(s) are already protected.");
+                return Result.Succeeded;
+            }
 
-            // Using a Transaction...
-            using (Transaction t = new Transaction(doc, "Oi: Protect Elements"))
+            // Get protection reason from user
+            if (Forms.FormCallers.ProtectionReason() is not string reason)
+            {
+                return Result.Cancelled;
+            }
+
+            using (var t = new Transaction(doc, "Oi: Protect Elements"))
             {
                 t.Start();
 
-                // For each Element...
-                foreach (Element element in selectedElements)
-                {
-                    // If not protected by the Schema, add protection
-                    if (!Schemas.DeleteSchemaManager.IsProtected(doc, element.Id))
-                    {
-                        Schemas.DeleteSchemaManager.ProtectElement(element);
-                        protectedCount++;
-                    }
-                }
+                Protection.ManagerRegistry.DeleteSchemaManager.ProtectElements(unprotectedElements,
+                    reason: reason ?? "No reason provided.");
 
                 t.Commit();
             }
 
             // Notify the user of the outcome
-            Forms.FormCallers.Message($"Deletion protection added to {protectedCount} new Element(s).");
+            Forms.FormCallers.Message($"Protection added to {unprotectedElements.Count} Element(s).");
             return Result.Succeeded;
         }
     }
 
     /// <summary>
-    /// A command.
+    /// Removes protection from selected Elements.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class Cmd_UnprotectSelectedElements : IExternalCommand
@@ -143,33 +145,37 @@ namespace Oi.Commands.Cmds_Delete
             UIDocument uidoc = commandData.Application.ActiveUIDocument;
             Document doc = uidoc.Document;
 
-            // Get selected Element(s)
-            List<Element> selectedElements = uidoc.Ext_SelectedElements();
+            // Catch if a non-admin somehow triggered this command
+            if (!Authorization.UserIsAdmin())
+            {
+                Forms.FormCallers.Message("Oi!\n\nWe're not quite sure how you got to this point, but this is an admin tool only.\n\n" +
+                    "You ain't an admin as far as I can tell, but hats off for getting to this point.");
+                return Result.Succeeded;
+            }
 
-            // Track newly unprotected Elements
-            int unprotectedCount = 0;
+            // Get selected Element(s) with protection
+            List<Element> protectedElements = uidoc.Ext_SelectedElements()
+                .Where(e => Protection.ManagerRegistry.DeleteSchemaManager.IsProtected(doc, e.Id))
+                .ToList();
 
-            // Using a Transaction...
-            using (Transaction t = new Transaction(doc, "Oi: Unprotect Elements"))
+            // Early return if already unprotected
+            if (protectedElements.Count == 0)
+            {
+                Forms.FormCallers.Message("All Element(s) are already unprotected.");
+                return Result.Succeeded;
+            }
+
+            using (var t = new Transaction(doc, "Oi: Unprotect Elements"))
             {
                 t.Start();
 
-                // For each Element...
-                foreach (Element element in selectedElements)
-                {
-                    // If protected by the Schema, remove protection
-                    if (Schemas.DeleteSchemaManager.IsProtected(doc, element.Id))
-                    {
-                        Schemas.DeleteSchemaManager.UnprotectElement(element);
-                        unprotectedCount++;
-                    }
-                }
+                Protection.ManagerRegistry.DeleteSchemaManager.UnprotectElements(protectedElements);
 
                 t.Commit();
             }
 
             // Notify the user of the outcome
-            Forms.FormCallers.Message($"Deletion protection removed from {unprotectedCount} protected Element(s).");
+            Forms.FormCallers.Message($"Protection removed from {protectedElements.Count} Element(s).");
             return Result.Succeeded;
         }
     }

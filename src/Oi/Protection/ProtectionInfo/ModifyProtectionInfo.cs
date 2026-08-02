@@ -3,38 +3,38 @@
 namespace Oi.Protection
 {
     /// <summary>
-    /// Provides deletion protection information from the deletion protection schema.
+    /// Provides modification protection information from the modification protection schema.
     /// </summary>
-    public class DeleteProtectionInfo : ProtectionInfo
+    public class ModifyProtectionInfo : ProtectionInfo
     {
         /// <summary>
         /// Gets the protection type represented by this instance.
         /// </summary>
-        public override string ProtectionType => "Deletion";
+        public override string ProtectionType => "Modification";
 
         /// <summary>
-        /// Attempts to read deletion protection information from an element.
+        /// Attempts to read modification protection information from an element.
         /// </summary>
         /// <param name="element">The element to inspect.</param>
         /// <returns>
-        /// <see langword="true"/> if the element contains deletion protection
+        /// <see langword="true"/> if the element contains modification protection
         /// information; otherwise, <see langword="false"/>.
         /// </returns>
         public override bool TryGetProtection(Element element)
         {
-            Schema schema = ManagerRegistry.DeleteSchemaManager.GetOrCreateSchema();
+            Schema schema = ManagerRegistry.ModifySchemaManager.GetOrCreateSchema();
             return base.GetProtection(element, schema);
         }
 
         /// <summary>
-        /// Gets a user-facing deletion protection message.
+        /// Gets a user-facing modification protection message.
         /// </summary>
-        /// <returns>The deletion protection message.</returns>
+        /// <returns>The modification protection message.</returns>
         public override string GetMessage()
         {
             if (!IsProtected)
             {
-                return "This element is not protected from deletion.";
+                return "This element is not protected from modification.";
             }
 
             return base.GetMessage();

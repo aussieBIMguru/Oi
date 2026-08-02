@@ -22,7 +22,7 @@ namespace Oi.Forms
         {
             InitializeComponent();
 
-            message ??= "The following elements are protected and cannot be deleted without an approved bypass.";
+            message ??= "The following elements are protected, to proceed you will need a bypass code.";
 
             this.BypassButton.IsEnabled = bypassable;
 

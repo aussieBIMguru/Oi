@@ -6,10 +6,22 @@ namespace Oi
 {
     /// <summary>
     /// Provides methods for generating and validating authorization codes
-    /// used to bypass deletion protection.
+    /// used to bypass deletion protection and have access to the broader
+    /// super user tooling.
+    /// 
+    /// The codes are effectively just challenge and response codes, where
+    /// the same process can be used to verify that a response code satisfies
+    /// the challenge code when presented to an end user.
     /// </summary>
     public static class Authorization
     {
+        /// <summary>
+        /// Returns if the user is verified as an administrator.
+        /// 
+        /// This is signified by the presence of an admin code
+        /// in the appdata Oi subfolder.
+        /// </summary>
+        /// <returns></returns>
         internal static bool UserIsAdmin()
         {
             // Ensure settings directory exists
@@ -35,7 +47,14 @@ namespace Oi
         }
         
         /// <summary>
-        /// Secret key used when generating bypass codes.
+        /// Secret additional key used when generating bypass codes.
+        /// 
+        /// If you build your own copy of Oi, it is recommend to change it.
+        /// so that other organizations cannot decrypt your protection codes
+        /// using their own copy of Oi.
+        /// 
+        /// This is not a 'sensitive' secret like when working with the web,
+        /// but is what makes your specific version of Oi codes unique.
         /// </summary>
         private static readonly byte[] Secret = Encoding.UTF8.GetBytes("OI");
 
@@ -54,8 +73,7 @@ namespace Oi
             userName ??= Globals.WINDOWS_USERNAME;
 
             // Hash the string and encode to a string
-            using SHA256 sha = SHA256.Create();
-            byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(userName));
+            byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(userName));
             return ToShortCode(hash, 15);
         }
 
@@ -72,8 +90,7 @@ namespace Oi
             string joinedIdString = string.Join(",", sorted);
 
             // Hash the string and encode to a string
-            using SHA256 sha = SHA256.Create();
-            byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(joinedIdString));
+            byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(joinedIdString));
             return ToShortCode(hash, 15);
         }
 
@@ -85,12 +102,11 @@ namespace Oi
         internal static string BuildActualBypassCode(string userCode)
         {
             // Using the secret as encryption
-            using (var hmac = new HMACSHA256(Secret))
-            {
-                // Compute the equivalent response code
-                byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(userCode));
-                return ToShortCode(hash, 15);
-            }
+            using var hmac = new HMACSHA256(Secret);
+
+            // Compute the equivalent response code
+            byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(userCode));
+            return ToShortCode(hash, 15);
         }
 
         /// <summary>

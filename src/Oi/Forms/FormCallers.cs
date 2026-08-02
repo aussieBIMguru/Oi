@@ -1,8 +1,12 @@
-﻿// The class belongs to the Forms namespace
-namespace Oi.Forms
+﻿namespace Oi.Forms
 {
     /// <summary>
     /// Static wrapper methods for forms.
+    /// 
+    /// These are intended to generally standardize and collate
+    /// the means of showing/handling the outcome of running the
+    /// Wpf forms in the Addin, but all forms can genreally be
+    /// called via their base form if needed also.
     /// </summary>
     public static class FormCallers
     {
@@ -27,6 +31,21 @@ namespace Oi.Forms
         }
 
         /// <summary>
+        /// Returns a protection reason entered by the user.
+        /// </summary>
+        /// <returns>The protection reason.</returns>
+        public static string ProtectionReason()
+        {
+            if (Forms.ProtectionReasonPrompt.Show(out string reason))
+            {
+                return reason;
+            }
+
+            // Typically unreachable
+            return null;
+        }
+
+        /// <summary>
         /// Displays a protection review form showing protected elements
         /// before allowing the user to proceed with a bypass request.
         /// </summary>
@@ -39,7 +58,7 @@ namespace Oi.Forms
         /// </returns>
         public static bool ReviewProtection(List<ProtectionReviewItem> items, string message = null, bool bypassable = true)
         {
-            ProtectionReview form = new ProtectionReview(items, message, bypassable);
+            var form = new ProtectionReview(items, message, bypassable);
             return form.ShowDialog() == true && form.ContinueToBypass;
         }
 

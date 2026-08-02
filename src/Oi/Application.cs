@@ -1,8 +1,6 @@
-﻿using Oi.Documents;
-using Oi.Schemas;
-using AVNA = Oi.Availability.AvailabilityNames;
+﻿using AVNA = Oi.Availability.AvailabilityNames;
 
-// The class belongs to the root namespace
+// Root namespace for the AddIn
 namespace Oi
 {
     /// <summary>
@@ -16,7 +14,8 @@ namespace Oi
         /// Handles the following steps:
         /// - Register global variables
         /// - Register the protection system
-        /// - Check if user is admin, and if they are...
+        /// 
+        /// Check if user is admin, and if they are...
         /// - Add panels, pulldowns and buttons to a new tab
         /// </summary>
         public Result OnStartup(UIControlledApplication uiCtlApp)
@@ -26,14 +25,10 @@ namespace Oi
             Globals.UICTLAPP.Idling += OnIdling;
             Globals.RegisterTooltips($"{Globals.ADDIN_NAME}.Resources.Files.Tooltips");
 
-            DocumentRegistry.Register(uiCtlApp);
-
-            // Register Failure definitions and Schemas
-            // Note: FailureDefinitions have to be defined in startup
-            _ = Failures.DeleteFailure.Definition;
-            _ = Failures.ModifyFailure.Definition;
-            Schemas.DeleteSchemaManager.Register(uiCtlApp);
-            // Schemas.ModifySchemaManager.Register(uiCtlApp);
+            // Register protection systems
+            _ = Protection.ProtectionFailure.Definition;
+            Protection.DocumentRegistry.Register(uiCtlApp);
+            Protection.ManagerRegistry.Register(uiCtlApp);
 
             // No tools ribbon if the user is not admin approved
             // This is also establishes the addin folder in AppData regardless
@@ -49,11 +44,8 @@ namespace Oi
 #endif
             }
 
-            // Root command namespace
-            string admI = $"{Globals.ADDIN_NAME}.Commands.Cmds_Admin";
+            // Add tab and primary panel
             uiCtlApp.Ext_AddRibbonTab(Globals.ADDIN_NAME);
-
-            // Add the administator panel
             RibbonPanel panel = uiCtlApp.Ext_AddRibbonPanelToTab(Globals.ADDIN_NAME, "Tools");
 
             // Admin dropdown and about button
@@ -100,20 +92,19 @@ namespace Oi
         /// </summary>
         public Result OnShutdown(UIControlledApplication uiCtlApp)
         {
-            Schemas.DeleteSchemaManager.Unregister(uiCtlApp);
-            DocumentRegistry.Unregister(uiCtlApp);
+            Protection.ManagerRegistry.Unregister(uiCtlApp);
+            Protection.DocumentRegistry.Unregister(uiCtlApp);
 
             // Return succeeded
             return Result.Succeeded;
         }
 
         /// <summary>
-        /// Registers the UIApplication as soon as Revit idles.
-        /// Unsubscribes the event once it fires once.
+        /// Fires as soon as Revit is available for the first time.
+        /// Unsubscribes the event once so that it fires once only.
         /// </summary>
         /// <param name="sender">The event sender object (the UIApplication).</param>
         /// <param name="e">Event related arguments..</param>
-        /// <returns>Void (nothing).</returns>
         private void OnIdling(object sender, UI.Events.IdlingEventArgs e)
         {
             if (sender is UIApplication uiApp)
@@ -124,13 +115,13 @@ namespace Oi
 
                 // Initialize the registry of documents currently open in Revit
                 // so schema managers can synchronize their updater triggers.
-                DocumentRegistry.Initialize(uiApp);
+                Protection.DocumentRegistry.Initialize(uiApp);
 
                 // (Re)build protection caches for documents already open before
                 // the add-in initialized.
-                foreach (Document doc in DocumentRegistry.OpenDocuments)
+                foreach (Document doc in Protection.DocumentRegistry.OpenDocuments)
                 {
-                    DeleteSchemaManager.RefreshCache(doc);
+                    Protection.ManagerRegistry.RefreshCache(doc);
                 }
             }
         }

@@ -50,6 +50,34 @@ namespace Oi.Protection
         public abstract bool TryGetProtection(Element element);
 
         /// <summary>
+        /// Acquires protection information from an element
+        /// </summary>
+        /// <param name="element">The element to inspect.</param>
+        /// <param name="schema">The Schema to check against.</param>
+        /// <returns></returns>
+        public virtual bool GetProtection(Element element, Schema schema)
+        {
+            Entity entity = element.GetEntity(schema);
+
+            if (!entity.IsValid())
+            {
+                return false;
+            }
+
+            IsProtected = entity.Get<string>(schema.GetField(Fields.Status)) == Status.Protected;
+            ProtectedBy = entity.Get<string>(schema.GetField(Fields.ProtectedBy));
+            Reason = entity.Get<string>(schema.GetField(Fields.Reason));
+            string date = entity.Get<string>(schema.GetField(Fields.ProtectedOn));
+
+            if (DateTime.TryParse(date, out DateTime parsed))
+            {
+                ProtectedOn = parsed;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Gets a human-readable message describing the current protection state.
         /// </summary>
         /// <returns>The protection status message.</returns>

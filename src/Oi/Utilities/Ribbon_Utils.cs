@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Media.Imaging;
 
-// The class belongs to the Utilities namespace
 namespace Oi.Utilities
 {
     /// <summary>
@@ -86,22 +85,21 @@ namespace Oi.Utilities
             string resourcePath = $"{Globals.ADDIN_NAME}.Resources.Icons{resolution}.{iconName}{resolution}{suffix}.png";
 
             // Read the resource from its full path
-            using (Stream stream = Globals.ADDIN_ASSEMBLY.GetManifestResourceStream(resourcePath))
+            using Stream stream = Globals.ADDIN_ASSEMBLY.GetManifestResourceStream(resourcePath);
+
+            // Throw exception if stream not made
+            if (stream == null)
             {
-                // Throw exception if stream not made
-                if (stream == null)
-                {
-                    return null;
-                }
-
-                // Decode the png resource
-                PngBitmapDecoder decoder = new System.Windows.Media.Imaging.PngBitmapDecoder(stream,
-                    BitmapCreateOptions.PreservePixelFormat,
-                    BitmapCacheOption.Default);
-
-                // Decode to image source
-                return decoder.Frames[0];
+                return null;
             }
+
+            // Decode the png resource
+            var decoder = new System.Windows.Media.Imaging.PngBitmapDecoder(stream,
+                BitmapCreateOptions.PreservePixelFormat,
+                BitmapCacheOption.Default);
+
+            // Decode to image source
+            return decoder.Frames[0];
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿// The class belongs to the Utilities namespace
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace Oi.Utilities
@@ -64,12 +63,11 @@ namespace Oi.Utilities
             // Try to open the file with exclusive access
             try
             {
-                using (var stream = new FileStream(filePath,
-                    FileMode.Open, FileAccess.Read, FileShare.None))
-                {
-                    // If we managed to run a stream, we can just return true
-                    return true;
-                }
+                using var stream = new FileStream(filePath,
+                    FileMode.Open, FileAccess.Read, FileShare.None);
+
+                // If we managed to run a stream, we can just return true
+                return true;
             }
             // Otherwise the file was not accessible
             catch
@@ -93,25 +91,24 @@ namespace Oi.Utilities
             try
             {
                 // Using a stream reader
-                using (var reader = new StreamReader(filePath))
+                using var reader = new StreamReader(filePath);
+
+                // While we have more rows to read
+                while (!reader.EndOfStream)
                 {
-                    // While we have more rows to read
-                    while (!reader.EndOfStream)
+                    // Read the line
+                    string line = reader.ReadLine();
+
+                    // If the row is not empty, add it
+                    if (line.Ext_HasChars())
                     {
-                        // Read the line
-                        string line = reader.ReadLine();
+                        rows.Add(line);
+                    }
 
-                        // If the row is not empty, add it
-                        if (line.Ext_HasChars())
-                        {
-                            rows.Add(line);
-                        }
-
-                        // If it isn't, and we don't skip, add empty
-                        else if (!skipEmpty)
-                        {
-                            rows.Add(string.Empty);
-                        }
+                    // If it isn't, and we don't skip, add empty
+                    else if (!skipEmpty)
+                    {
+                        rows.Add(string.Empty);
                     }
                 }
             }
@@ -142,12 +139,11 @@ namespace Oi.Utilities
             // Write to the file as list
             try
             {
-                using (var writer = new StreamWriter(filePath, false))
+                using var writer = new StreamWriter(filePath, false);
+
+                foreach (string row in dataRows)
                 {
-                    foreach (string row in dataRows)
-                    {
-                        writer.WriteLine(row);
-                    }
+                    writer.WriteLine(row);
                 }
             }
             // Report exception
