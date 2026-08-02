@@ -59,6 +59,11 @@ namespace Oi.Protection
         public Dictionary<Document, Dictionary<ElementId, ProtectionReviewItem>> ProtectedElementsCache = [];
 
         /// <summary>
+        /// Elements permitted for bypass by the user on a session basis.
+        /// </summary>
+        public Dictionary<Document, HashSet<ElementId>> BypassedIds = new();
+
+        /// <summary>
         /// The identifier of the IUpdater responsible for enforcing this
         /// protection system.
         ///
@@ -442,6 +447,45 @@ namespace Oi.Protection
         {
             return ProtectedElementsCache.TryGetValue(doc, out var cache)
                 && cache.ContainsKey(id);
+        }
+
+        /// <summary>
+        /// Adds an element to the session bypass list.
+        /// </summary>
+        public void AddBypass(Document doc, ElementId id)
+        {
+            if (!BypassedIds.TryGetValue(doc, out var cache))
+            {
+                cache = new HashSet<ElementId>();
+                BypassedIds.Add(doc, cache);
+            }
+
+            cache.Add(id);
+        }
+
+        /// <summary>
+        /// Adds elements to the session bypass list.
+        /// </summary>
+        public void AddBypass(Document doc, List<ElementId> ids)
+        {
+            if (!BypassedIds.TryGetValue(doc, out var cache))
+            {
+                cache = new HashSet<ElementId>();
+                BypassedIds.Add(doc, cache);
+            }
+
+            cache.UnionWith(ids);
+        }
+
+        /// <summary>
+        /// Determines whether a specific element is currently bypassed.
+        /// 
+        /// This is a per user/model session override only.
+        /// </summary>
+        public bool HasBypassAuthorization(Document doc, ElementId id)
+        {
+            return BypassedIds.TryGetValue(doc, out var cache)
+                && cache.Contains(id);
         }
 
         /// <summary>

@@ -38,6 +38,7 @@
             // Get the involved Ids that are protected by the related Schema
             List<ElementId> protectedIds = data.GetDeletedElementIds()
                 .Where(id => ManagerRegistry.DeleteSchemaManager.IsProtected(doc, id))
+                .Where(id => !ManagerRegistry.DeleteSchemaManager.HasBypassAuthorization(doc, id))
                 .ToList();
 
             // If any Elements are protected...
@@ -50,17 +51,10 @@
                 if (Forms.FormCallers.ReviewProtection(reviewItems, bypassable: true)
                     && Forms.FormCallers.BypassProtection(protectedIds))
                 {
-                    using var t = new Transaction(doc, "Oi: Unprotect Elements");
+                    // Add the Ids to the bypass for the Schema manager
+                    ManagerRegistry.DeleteSchemaManager.AddBypass(doc, protectedIds);
 
-                    t.Start();
-
-                    // Unprotect the Elements
-                    ManagerRegistry.DeleteSchemaManager.UnprotectElements(protectedIds, doc);
-
-                    t.Commit();
-
-                    // This will go on to delete the Elements
-                    return;
+                    // Change goes ahead (deletion)
                 }
 
                 // Failure handled if bypass not taken successfully

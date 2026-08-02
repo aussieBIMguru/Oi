@@ -38,6 +38,7 @@
             // Get the involved Ids that are protected by the related Schema
             List<ElementId> protectedIds = data.GetModifiedElementIds()
                 .Where(id => ManagerRegistry.ModifySchemaManager.IsProtected(doc, id))
+                .Where(id => !ManagerRegistry.ModifySchemaManager.HasBypassAuthorization(doc, id))
                 .ToList();
 
             // If any Elements are protected...
@@ -50,23 +51,18 @@
                 if (Forms.FormCallers.ReviewProtection(reviewItems, bypassable: true)
                     && Forms.FormCallers.BypassProtection(protectedIds))
                 {
-                    using var t = new Transaction(doc, "Oi: Unprotect Elements");
+                    // Add the Ids to the bypass for the Schema manager
+                    ManagerRegistry.ModifySchemaManager.AddBypass(doc, protectedIds);
 
-                    t.Start();
-
-                    // Unprotect the Elements
-                    ManagerRegistry.ModifySchemaManager.UnprotectElements(protectedIds, doc);
-
-                    t.Commit();
-
-                    // This will go on to modify the Elements
-                    return;
+                    // Change goes ahead (modification)
                 }
-
-                // Failure handled if bypass not taken successfully
-                var fm = new FailureMessage(ProtectionFailure.Id);
-                fm.SetFailingElements(protectedIds);
-                doc.PostFailure(fm);
+                else
+                {
+                    // Failure handled if bypass not taken successfully
+                    var fm = new FailureMessage(ProtectionFailure.Id);
+                    fm.SetFailingElements(protectedIds);
+                    doc.PostFailure(fm);
+                }
             }
         }
 
