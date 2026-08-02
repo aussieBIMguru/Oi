@@ -1,0 +1,10 @@
+﻿<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Oi</Name>
+		<Assembly>Oi/Oi.dll</Assembly>
+		<AddInId>CB7186FB-4814-4B5B-8498-24B0DAA83C8B</AddInId>
+		<FullClassName>Oi.Application</FullClassName>
+		<VendorId>Gavin Nicholls</VendorId>
+		<VendorDescription>Aussie BIM Guru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage SchemaVersion="1.0" ProductType="Application" AutodeskProduct="Revit" Name="Oi" AppVersion="26.08.01.01">
+  <CompanyDetails Name="Aussie BIM Guru" Email="aussiebimguru@gmail.com" Url="https://github.com/aussieBIMguru" />
+  <Components Description="Revit 2025">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2025" SeriesMax="R2025" />
+    <ComponentEntry AppName="Oi" ModuleName="./Contents/Oi/26.08.01.01/2025/Oi.addin" />
+  </Components> 
+  <Components Description="Revit 2026">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2026" SeriesMax="R2026" />
+    <ComponentEntry AppName="Oi" ModuleName="./Contents/Oi/26.08.01.01/2026/Oi.addin" />
+  </Components> 
+</ApplicationPackage>

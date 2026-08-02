@@ -1,0 +1,2144 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Oi</name>
+    </assembly>
+    <members>
+        <member name="T:Oi.Application">
+            <summary>
+            Handles the startup and shutdown behavior of the addin.
+            </summary>
+        </member>
+        <member name="M:Oi.Application.OnStartup(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Runs when the application starts.
+            
+            Handles the following steps:
+            - Register global variables
+            - Register the protection system
+            
+            Check if user is admin, and if they are...
+            - Add panels, pulldowns and buttons to a new tab
+            </summary>
+        </member>
+        <member name="M:Oi.Application.OnShutdown(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Runs when the application shuts down.
+            
+            Handles the following steps:
+            - Unsubscribe from events if needed
+            </summary>
+        </member>
+        <member name="M:Oi.Application.OnIdling(System.Object,Autodesk.Revit.UI.Events.IdlingEventArgs)">
+            <summary>
+            Fires as soon as Revit is available for the first time.
+            Unsubscribes the event once so that it fires once only.
+            </summary>
+            <param name="sender">The event sender object (the UIApplication).</param>
+            <param name="e">Event related arguments..</param>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Admin.Cmd_About">
+            <summary>
+            Provides information about Oi.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Admin.Cmd_About.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Admin.Cmd_SelfAppointAsAdmin">
+            <summary>
+            Allows someone to self appoint themselves in Debug mode.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Admin.Cmd_SelfAppointAsAdmin.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Admin.Cmd_GetAdminCode">
+            <summary>
+            Runs the form to get an admin appointment code.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Admin.Cmd_GetAdminCode.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Admin.Cmd_GetBypassCode">
+            <summary>
+            Runs the form to get a bypass code from a request code.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Admin.Cmd_GetBypassCode.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Delete.Cmd_SelectProtectedElements">
+            <summary>
+            Selects any protected Elements by the related Schema in the current Document.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Delete.Cmd_SelectProtectedElements.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Selects all protected Elements in the current Document.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Delete.Cmd_ProtectionReview">
+            <summary>
+            Launches a detailed review window regarding the nature of protection on selected Elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Delete.Cmd_ProtectionReview.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Delete.Cmd_ProtectSelectedElements">
+            <summary>
+            Adds protection to selected Elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Delete.Cmd_ProtectSelectedElements.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Delete.Cmd_UnprotectSelectedElements">
+            <summary>
+            Removes protection from selected Elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Delete.Cmd_UnprotectSelectedElements.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Modify.Cmd_SelectProtectedElements">
+            <summary>
+            Selects all protected Elements in the current Document.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Modify.Cmd_SelectProtectedElements.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Modify.Cmd_ProtectionReview">
+            <summary>
+            Launches a detailed review window regarding the nature of protection on selected Elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Modify.Cmd_ProtectionReview.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Modify.Cmd_ProtectSelectedElements">
+            <summary>
+            Adds protection to selected Elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Modify.Cmd_ProtectSelectedElements.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Commands.Cmds_Modify.Cmd_UnprotectSelectedElements">
+            <summary>
+            Removes protection from selected Elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Commands.Cmds_Modify.Cmd_UnprotectSelectedElements.Execute(Autodesk.Revit.UI.ExternalCommandData,System.String@,Autodesk.Revit.DB.ElementSet)">
+            <summary>
+            Execute the command.
+            </summary>
+            <param name="commandData">Command related data.</param>
+            <param name="message">Command related message.</param>
+            <param name="elements">Command related elements.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Extensions.Document_Ext">
+            <summary>
+            Methods of this class generally relate to Documents.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_DeleteElement``1(Autodesk.Revit.DB.Document,``0)">
+            <summary>
+            Attempts to delete an element from the document.
+            </summary>
+            <param name="doc">The Document to delete from (extended).</param>
+            <param name="obj">A Revit Element.</param>
+            <typeparam name="T">The type of Element to delete.</typeparam>
+            <returns>A Result object.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_Collector(Autodesk.Revit.DB.Document)">
+            <summary>
+            Creates a new collector object.
+            </summary>
+            <param name="doc">A Revit document (extended).</param>
+            <returns>A FilteredElementCollector object.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_Collector(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.View)">
+            <summary>
+            Creates a new collector object, in the given view.
+            </summary>
+            <param name="doc">A Revit document (extended).</param>
+            <param name="view">An Revit view.</param>
+            <returns>A FilteredElementCollector object.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_GetElementsOfCategory(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.BuiltInCategory,Autodesk.Revit.DB.View)">
+            <summary>
+            Collects all elements (not types) of the provided category.
+            </summary>
+            <param name="doc">A Revit document (extended).</param>
+            <param name="builtInCategory">A Revit BuiltInCategory.</param>
+            <param name="view">An optional view.</param>
+            <returns>A list of Elements.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_GetTypesOfCategory(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.BuiltInCategory,Autodesk.Revit.DB.View)">
+            <summary>
+            Collects all elements types of the provided category.
+            </summary>
+            <param name="doc">A Revit document (extended).</param>
+            <param name="builtInCategory">A Revit BuiltInCategory.</param>
+            <param name="view">An optional view.</param>
+            <returns>A list of Element types.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_GetElementsOfClass``1(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.View)">
+            <summary>
+            Collects all elements of a given class.
+            </summary>
+            <typeparam name="T">The class to collect.</typeparam>
+            <param name="doc">A Revit document (extended).</param>
+            <param name="view">A Revit view.</param>
+            <returns>A list of elements of type T.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Document_Ext.Ext_GetTypessOfClass``1(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.View)">
+            <summary>
+            Collects all types of a given class.
+            </summary>
+            <param name="doc">A Revit document (extended).</param>
+            <param name="view">A Revit view.</param>
+            <returns>A list of types of type T.</returns>
+        </member>
+        <member name="T:Oi.Extensions.Double_Ext">
+            <summary>
+            Extension methods to the double class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.Double_Ext.Ext_ToDegrees(System.Double)">
+            <summary>
+            Convert an angle from radians to degrees.
+            </summary>
+            <param name="radians">The value to convert.</param>
+            <returns>A double.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Double_Ext.Ext_ToRadians(System.Double)">
+            <summary>
+            Convert an angle from degrees to radians.
+            </summary>
+            <param name="degrees">The value to convert.</param>
+            <returns>A double.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Double_Ext.Ext_InternalToProject(System.Double,Autodesk.Revit.DB.ForgeTypeId)">
+            <summary>
+            Converts a value to project units from internal units.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <param name="unitType">The UnitType to convert using.</param>
+            <returns>The converted value.</returns>
+        </member>
+        <member name="M:Oi.Extensions.Double_Ext.Ext_ProjectToInternal(System.Double,Autodesk.Revit.DB.ForgeTypeId)">
+            <summary>
+            Converts a value from project units to internal units.
+            </summary>
+            <param name="value">The value to convert.</param>
+            <param name="unitType">The UnitType to convert using.</param>
+            <returns>The converted value.</returns>
+        </member>
+        <member name="T:Oi.Extensions.ElementId_Ext">
+            <summary>
+            Extension methods to the ElementId class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.ElementId_Ext.Ext_IsValid(Autodesk.Revit.DB.ElementId)">
+            <summary>
+            Returns if an ElementId is not null or invalid.
+            </summary>
+            <param name="id">The ElementId to check.</param>
+            <returns>A Boolean.</returns>
+        </member>
+        <member name="M:Oi.Extensions.ElementId_Ext.Ext_IsInValid(Autodesk.Revit.DB.ElementId)">
+            <summary>
+            Returns if an ElementId is null or invalid.
+            </summary>
+            <param name="id">The ElementId to check.</param>
+            <returns>A Boolean.</returns>
+        </member>
+        <member name="M:Oi.Extensions.ElementId_Ext.Ext_GetElement``1(Autodesk.Revit.DB.ElementId,Autodesk.Revit.DB.Document)">
+            <summary>
+            Gets the Element of a given ElementId if it's of the specified type.
+            </summary>
+            <typeparam name="T">The Type to check for.</typeparam>
+            <param name="id">The ElementId to convert to an Element.</param>
+            <param name="doc">The Document to get the Element from.</param>
+            <returns>A DB Element.</returns>
+        </member>
+        <member name="T:Oi.Extensions.PulldownButton_Ext">
+            <summary>
+            Extension methods to the PulldownButton class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.PulldownButton_Ext.Ext_AddPushButton``1(Autodesk.Revit.UI.PulldownButton,System.String,System.String,System.String)">
+            <summary>
+            Adds a Pushbutton to the pulldown.
+            </summary>
+            <typeparam name="CommandClass">The related Command class.</typeparam>
+            <param name="pulldownButton">The PulldownButton (extended).</param>
+            <param name="buttonName">The name for the button.</param>
+            <param name="availability">The availability name.</param>
+            <param name="suffix">The icon suffix (if any).</param>
+            <returns>A Pushbutton object.</returns>
+        </member>
+        <member name="T:Oi.Extensions.RibbonPanel_Ext">
+            <summary>
+            Extension methods to the RibbonPanel class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.RibbonPanel_Ext.Ext_AddPushButton``1(Autodesk.Revit.UI.RibbonPanel,System.String,System.String,System.String)">
+            <summary>
+            Adds a Pushbutton to the panel.
+            </summary>
+            <typeparam name="CommandClass">The related Command class.</typeparam>
+            <param name="ribbonPanel">The RibbonPanel (extended).</param>
+            <param name="buttonName">The name for the button.</param>
+            <param name="availability">The availability name.</param>
+            <param name="suffix">The icon suffix (none by default).</param>
+            <returns>A Pushbutton object.</returns>
+        </member>
+        <member name="M:Oi.Extensions.RibbonPanel_Ext.Ext_AddPulldownButton(Autodesk.Revit.UI.RibbonPanel,System.String,System.String,System.String)">
+            <summary>
+            Creates a pulldownbutton on a panel.
+            </summary>
+            <param name="ribbonPanel">The RibbonPanel (extended).</param>
+            <param name="buttonName">The displayed name of the pulldown.</param>
+            <param name="nameSpace">The namespace the button relates to.</param>
+            <param name="suffix">The icon suffix (none by default).</param>
+            <returns>A pulldownButton object.</returns>
+        </member>
+        <member name="T:Oi.Extensions.String_Ext">
+            <summary>
+            Extension methods to the String class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_HasChars(System.String)">
+            <summary>
+            Returns if a string has characters.
+            </summary>
+            <param name="str">The string.</param>
+            <returns>A boolean.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_HasNoChars(System.String)">
+            <summary>
+            Returns if a string has no characters.
+            </summary>
+            <param name="str">The string.</param>
+            <returns>A boolean.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_DeNull(System.String,System.String,System.Boolean)">
+            <summary>
+            If string is null, substitutes it.
+            </summary>
+            <param name="str">The string.</param>
+            <param name="ifNull">Value to replace if null (optional).</param>
+            <param name="replaceEmpty">Catch empty string case also.</param>
+            <returns>A string.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_SendToClipboard(System.String)">
+            <summary>
+            Sends the string to the clipboard.
+            </summary>
+            <param name="text">The text to send.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_ToIntOrNull(System.String)">
+            <summary>
+            Convert a string to a nullable integer.
+            </summary>
+            <param name="text">The value to convert.</param>
+            <returns>A nullable integer.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_ToIntWithFallback(System.String,System.Int32)">
+            <summary>
+            Convert a string to an integer.
+            </summary>
+            <param name="text">The value to convert.</param>
+            <param name="failValue">The value to return on failure to convert.</param>
+            <returns>An integer.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_ToDoubleOrNull(System.String)">
+            <summary>
+            Convert a string to a nullable double.
+            </summary>
+            <param name="text">The value to convert.</param>
+            <returns>A nullable double.</returns>
+        </member>
+        <member name="M:Oi.Extensions.String_Ext.Ext_ToDoubleOrFallback(System.String,System.Double)">
+            <summary>
+            Convert a string to a double.
+            </summary>
+            <param name="text">The value to convert.</param>
+            <param name="failValue">The value to return on failure to convert.</param>
+            <returns>A double.</returns>
+        </member>
+        <member name="T:Oi.Extensions.UIControlledApplication_Ext">
+            <summary>
+            Extension methods to the UIControlledApplication class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.UIControlledApplication_Ext.Ext_AddRibbonTab(Autodesk.Revit.UI.UIControlledApplication,System.String)">
+            <summary>
+            Adds a new tab to the Ribbon.
+            </summary>
+            <param name="uiApp">The UIControlledApplication (extended).</param>
+            <param name="tabName">The name of the tab to add.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="M:Oi.Extensions.UIControlledApplication_Ext.Ext_AddRibbonPanelToTab(Autodesk.Revit.UI.UIControlledApplication,System.String,System.String)">
+            <summary>
+            Adds a new RibbonPanel to the tab.
+            </summary>
+            <param name="uiApp">The UIControlledApplication (extended).</param>
+            <param name="tabName">The name of the tab on which to add the panel.</param>
+            <param name="panelName">The name of the panel to create.</param>
+            <returns>A RibbonPanel.</returns>
+        </member>
+        <member name="M:Oi.Extensions.UIControlledApplication_Ext.Ext_GetRibbonPanelByName(Autodesk.Revit.UI.UIControlledApplication,System.String,System.String)">
+            <summary>
+            Returns a RibbonPanel from a tab.
+            </summary>
+            <param name="uiApp">The UIControlledApplication (extended).</param>
+            <param name="panelName">The name of the panel to search for.</param>
+            <param name="tabName">The name of the tab on which to search.</param>
+            <returns>A RibbonPanel.</returns>
+        </member>
+        <member name="T:Oi.Extensions.UIDocument_Ext">
+            <summary>
+            Extension methods to the UIDocument class.
+            </summary>
+        </member>
+        <member name="M:Oi.Extensions.UIDocument_Ext.Ext_SelectedElements(Autodesk.Revit.UI.UIDocument)">
+            <summary>
+            Gets currently selected elements.
+            </summary>
+            <param name="uiDoc">The active UIDocument (extended).</param>
+            <returns>A list of elements.</returns>
+        </member>
+        <member name="M:Oi.Extensions.UIDocument_Ext.Ext_SelectedElements``1(Autodesk.Revit.UI.UIDocument)">
+            <summary>
+            Gets currently selected elements of a given type.
+            </summary>
+            <typeparam name="T">The type of elements to get.</typeparam>
+            <param name="uiDoc">The active UIDocument (extended).</param>
+            <returns>A list of elements.</returns>
+        </member>
+        <member name="T:Oi.Forms.BypassCodeGenerator">
+            <summary>
+            Provides a dialog for generating bypass codes
+            from request codes.
+            </summary>
+            <summary>
+            BypassCodeGenerator
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.BypassCodeGenerator.Message">
+            <summary>
+            The message displayed to the user explaining the request.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.BypassCodeGenerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Oi.Forms.BypassCodeGenerator"/> class.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.BypassCodeGenerator.GenerateButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Generates an authorization code for the supplied user name.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.BypassCodeGenerator.CopyButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Copies the generated bypass code to the clipboard.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.BypassCodeGenerator.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.ProtectionReasonPrompt">
+            <summary>
+            Provides a prompt for collecting a protection reason from the user.
+            </summary>
+            <summary>
+            ProtectionReasonPrompt
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReasonPrompt.Accepted">
+            <summary>
+            Indicates whether the user accepted the prompt.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReasonPrompt.Reason">
+            <summary>
+            Gets the entered protection reason.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.ProtectionReasonPrompt.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Oi.Forms.ProtectionReasonPrompt"/> class.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.ProtectionReasonPrompt.Show(System.String@)">
+            <summary>
+            Displays the protection reason prompt.
+            </summary>
+            <param name="reason">The entered reason, if accepted.</param>
+            <returns>True if the user accepted the prompt.</returns>
+        </member>
+        <member name="M:Oi.Forms.ProtectionReasonPrompt.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.ProtectionReview">
+            <summary>
+            Displays protected elements before allowing a bypass request.
+            </summary>
+            <summary>
+            ProtectionReview
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReview.ContinueToBypass">
+            <summary>
+            Whether the user wants to continue to bypass.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.ProtectionReview.#ctor(System.Collections.Generic.IEnumerable{Oi.Forms.ProtectionReviewItem},System.String,System.Boolean)">
+            <summary>
+            Creates a new protection review dialog.
+            </summary>
+            <param name="items">Protected element summaries.</param>
+            <param name="message">Summary of the form.</param>
+            <param name="bypassable">Should the bypass button be active.</param>
+        </member>
+        <member name="M:Oi.Forms.ProtectionReview.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.UserAuthorization">
+            <summary>
+            Provides a dialog window for entering and validating an authorization
+            response code against a supplied challenge code.
+            </summary>
+            <summary>
+            UserAuthorization
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.UserAuthorization.Message">
+            <summary>
+            The message displayed to the user explaining the authorization request.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.UserAuthorization.UserCode">
+            <summary>
+            The challenge code that the user must provide a response for.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.UserAuthorization.IsAuthorized">
+            <summary>
+            Indicates whether the entered response was successfully validated
+            before the user confirmed the dialog.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.UserAuthorization.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Oi.Forms.UserAuthorization"/> class.
+            </summary>
+            <param name="message">The message displayed to the user.</param>
+            <param name="challenge">The challenge code requiring authorization.</param>
+        </member>
+        <member name="M:Oi.Forms.UserAuthorization.CopyButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Copies the challenge code to the clipboard for use when generating
+            a response code.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserAuthorization.AuthorizeButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Validates the entered response code against the challenge code.
+            Enables confirmation only when the response is successfully verified.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserAuthorization.OkButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Confirms the dialog and returns the authorization result.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserAuthorization.ShowAndAuthorize(System.String,System.String)">
+            <summary>
+            Displays the authorization dialog and returns whether the user
+            successfully completed authorization.
+            </summary>
+            <param name="message">The message displayed to the user.</param>
+            <param name="challenge">The challenge code requiring authorization.</param>
+            <returns>
+            <see langword="true"/> if authorization succeeded; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Oi.Forms.UserAuthorization.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.UserCodeGenerator">
+            <summary>
+            Provides a dialog for generating administrator authorization codes
+            from Windows user names.
+            </summary>
+            <summary>
+            UserCodeGenerator
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.UserCodeGenerator.Message">
+            <summary>
+            The message displayed to the user explaining the request.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.UserCodeGenerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Oi.Forms.UserCodeGenerator"/> class.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.UserCodeGenerator.GenerateButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Generates an authorization code for the supplied user name.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserCodeGenerator.CopyButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Copies the generated authorization code to the clipboard.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserCodeGenerator.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.UserPrompt">
+            <summary>
+            Provides a reusable message prompt with configurable accept and cancel actions.
+            </summary>
+            <summary>
+            UserPrompt
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.UserPrompt.Accepted">
+            <summary>
+            Indicates whether the user accepted the prompt.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.#ctor(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Oi.Forms.UserPrompt"/> class.
+            </summary>
+            <param name="message">Message displayed to the user.</param>
+            <param name="acceptText">Text displayed on the accept button.</param>
+            <param name="cancelText">Text displayed on the cancel button.</param>
+            <param name="showCancel">Whether the cancel button should be displayed.</param>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.AcceptButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Accepts the prompt.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.CancelButton_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Cancels the prompt.
+            </summary>
+            <param name="sender">The button click sender.</param>
+            <param name="e">The routed event arguments.</param>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.Show(System.String)">
+            <summary>
+            Displays a standard OK/Cancel prompt.
+            </summary>
+            <param name="message">Message displayed to the user.</param>
+            <returns>
+            True if the user clicked OK; otherwise false.
+            </returns>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.Confirm(System.String)">
+            <summary>
+            Displays a Yes/No confirmation prompt.
+            </summary>
+            <param name="message">Message displayed to the user.</param>
+            <returns>
+            True if the user clicked Yes; otherwise false.
+            </returns>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.ShowMessage(System.String)">
+            <summary>
+            Displays an information prompt with only an OK button.
+            </summary>
+            <param name="message">Message displayed to the user.</param>
+            <returns>
+            True when the user clicks OK.
+            </returns>
+        </member>
+        <member name="M:Oi.Forms.UserPrompt.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.FormCallers">
+            <summary>
+            Static wrapper methods for forms.
+            
+            These are intended to generally standardize and collate
+            the means of showing/handling the outcome of running the
+            Wpf forms in the Addin, but all forms can genreally be
+            called via their base form if needed also.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.Message(System.String)">
+            <summary>
+            Returns a message form.
+            </summary>
+            <param name="message">Message to display to the user.</param>
+            <returns>If OK was pressed.</returns>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.MessageYesNo(System.String)">
+            <summary>
+            Returns a confirmation form.
+            </summary>
+            <param name="message">Message to display to the user.</param>
+            <returns>If Yes was pressed.</returns>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.ProtectionReason">
+            <summary>
+            Returns a protection reason entered by the user.
+            </summary>
+            <returns>The protection reason.</returns>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.ReviewProtection(System.Collections.Generic.List{Oi.Forms.ProtectionReviewItem},System.String,System.Boolean)">
+            <summary>
+            Displays a protection review form showing protected elements
+            before allowing the user to proceed with a bypass request.
+            </summary>
+            <param name="items">The protected element information to display.</param>
+            <param name="message">Optional message to user.</param>
+            <param name="bypassable">Will the task proceed to bypass.</param>
+            <returns>
+            <see langword="true"/> if the user made it through bypass.
+            otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.BypassProtection(System.Collections.Generic.List{Autodesk.Revit.DB.ElementId})">
+            <summary>
+            Provides a bypass code entry form.
+            </summary>
+            <param name="protectedIds">The Elements to bypass.</param>
+            <returns>If the attempt was successful.</returns>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.GetAdminCode">
+            <summary>
+            Provides a user code entry form.
+            </summary>
+        </member>
+        <member name="M:Oi.Forms.FormCallers.GetBypassCode">
+            <summary>
+            Provides a bypass request entry form.
+            </summary>
+        </member>
+        <member name="T:Oi.Forms.ProtectionReviewItem">
+            <summary>
+            Represents protection information presented in the protection review UI.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReviewItem.ElementId">
+            <summary>
+            The protected element identifier.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReviewItem.ElementName">
+            <summary>
+            The element display name.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReviewItem.Category">
+            <summary>
+            The element category.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReviewItem.Protection">
+            <summary>
+            The protection information.
+            </summary>
+        </member>
+        <member name="P:Oi.Forms.ProtectionReviewItem.Message">
+            <summary>
+            Gets a user-friendly protection description.
+            </summary>
+        </member>
+        <member name="T:Oi.Authorization">
+            <summary>
+            Provides methods for generating and validating authorization codes
+            used to bypass deletion protection and have access to the broader
+            super user tooling.
+            
+            The codes are effectively just challenge and response codes, where
+            the same process can be used to verify that a response code satisfies
+            the challenge code when presented to an end user.
+            </summary>
+        </member>
+        <member name="M:Oi.Authorization.UserIsAdmin">
+            <summary>
+            Returns if the user is verified as an administrator.
+            
+            This is signified by the presence of an admin code
+            in the appdata Oi subfolder.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:Oi.Authorization.Secret">
+            <summary>
+            Secret additional key used when generating bypass codes.
+            
+            If you build your own copy of Oi, it is recommend to change it.
+            so that other organizations cannot decrypt your protection codes
+            using their own copy of Oi.
+            
+            This is not a 'sensitive' secret like when working with the web,
+            but is what makes your specific version of Oi codes unique.
+            </summary>
+        </member>
+        <member name="M:Oi.Authorization.BuildUserNameCode(System.String)">
+            <summary>
+            Builds a deterministic authorization code from a user name.
+            If no user name is supplied, Windows username is used.
+            </summary>
+            <param name="userName">
+            The user name to generate a code for, or <see langword="null"/> to use the
+            current Windows username.
+            </param>
+            <returns>A short code representing the specified user name.</returns>
+        </member>
+        <member name="M:Oi.Authorization.BuildUserFacingCode(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.ElementId})">
+            <summary>
+            Builds a deterministic user-facing authorization code from a collection
+            of element identifiers.
+            </summary>
+            <param name="ids">The element identifiers.</param>
+            <returns>A short code representing the supplied element identifiers.</returns>
+        </member>
+        <member name="M:Oi.Authorization.BuildActualBypassCode(System.String)">
+            <summary>
+            Generates the expected bypass code for a user-facing authorization code.
+            </summary>
+            <param name="userCode">The user-facing authorization code.</param>
+            <returns>The corresponding bypass code.</returns>
+        </member>
+        <member name="M:Oi.Authorization.VerifyUserBypassCode(System.String,System.String)">
+            <summary>
+            Verifies that a supplied bypass code is valid for the specified
+            user-facing authorization code.
+            </summary>
+            <param name="userCode">The user-facing authorization code.</param>
+            <param name="userBypassCode">The bypass code to validate.</param>
+            <returns>
+            <see langword="true"/> if the bypass code is valid; otherwise,
+            <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Oi.Authorization.ToShortCode(System.Byte[],System.Int32)">
+            <summary>
+            Converts a hash into a shortened, URL-friendly uppercase code.
+            </summary>
+            <param name="hash">The hash to convert.</param>
+            <param name="length">The number of characters to include in the result.</param>
+            <returns>A shortened authorization code.</returns>
+        </member>
+        <member name="T:Oi.Availability.AvailabilityNames">
+            <summary>
+            Provides a shorter means of referencing availability class names.
+            </summary>
+        </member>
+        <member name="F:Oi.Availability.AvailabilityNames.ZeroDoc">
+            <summary>
+            The full name of the availability class.
+            </summary>
+        </member>
+        <member name="F:Oi.Availability.AvailabilityNames.Project">
+            <summary>
+            The full name of the availability class.
+            </summary>
+        </member>
+        <member name="F:Oi.Availability.AvailabilityNames.Selection">
+            <summary>
+            The full name of the availability class.
+            </summary>
+        </member>
+        <member name="T:Oi.Availability.ZeroDoc">
+            <summary>
+            This class is used by commands to check if they are available in the current context.
+            This availability tells a command to always be available.
+            </summary>
+        </member>
+        <member name="M:Oi.Availability.ZeroDoc.IsCommandAvailable(Autodesk.Revit.UI.UIApplication,Autodesk.Revit.DB.CategorySet)">
+            <summary>
+            Returns if a Command using this is available.
+            </summary>
+            <param name="uiApp">The UIApplication.</param>
+            <param name="categories">Categories of selected elements.</param>
+            <returns>A Boolean indicating if the command is available.</returns>
+        </member>
+        <member name="T:Oi.Availability.Project">
+            <summary>
+            This class is used by commands to check if they are available in the current context.
+            This availability tells a command to be available if there is an active Project Document.
+            </summary>
+        </member>
+        <member name="M:Oi.Availability.Project.IsCommandAvailable(Autodesk.Revit.UI.UIApplication,Autodesk.Revit.DB.CategorySet)">
+            <summary>
+            Returns if a Command using this is available.
+            </summary>
+            <param name="uiApp">The UIApplication.</param>
+            <param name="categories">Categories of selected elements.</param>
+            <returns>A Boolean indicating if the command is available.</returns>
+        </member>
+        <member name="T:Oi.Availability.Selection">
+            <summary>
+            This class is used by commands to check if they are available in the current context.
+            This availability tells a command to be available if there are Elements in the current selection.
+            </summary>
+        </member>
+        <member name="M:Oi.Availability.Selection.IsCommandAvailable(Autodesk.Revit.UI.UIApplication,Autodesk.Revit.DB.CategorySet)">
+            <summary>
+            Returns if a Command using this is available.
+            </summary>
+            <param name="uiApp">The UIApplication.</param>
+            <param name="categories">Categories of selected elements.</param>
+            <returns>A Boolean indicating if the command is available.</returns>
+        </member>
+        <member name="T:Oi.Globals">
+            <summary>
+            Variables that persist beyond the running of commands.
+            They can be accessed via this static class where they would otherwise be inaccessible.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.UICTLAPP">
+            <summary>
+            The UIControlledApplication for the session.
+            
+            Variable stored on App startup - not safe to call until Idling.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.UIAPP">
+            <summary>
+            The UIApplication for the session.
+            
+            Variable stored on App startup - not safe to call until Idling.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.CTLAPP">
+            <summary>
+            The ControlledApplication for the session.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.UIDOC">
+            <summary>
+            The active UIDocument for the session.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.DOC">
+            <summary>
+            The active Document for the session.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ACTIVE_VIEW">
+            <summary>
+            The active View for the session.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_ID">
+            <summary>
+            The add-in ID.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_GUID">
+            <summary>
+            The add-in GUID.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_ASSEMBLY">
+            <summary>
+            The add-in Assembly.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_NAME">
+            <summary>
+            The add-in name.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_ASSEMBLY_PATH">
+            <summary>
+            The path to the add-in Assembly.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_ASSEMBLY_DLLPATH">
+            <summary>
+            The path to the Dll for the add-in Assembly.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_VERSION">
+            <summary>
+            The add-in version number.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_SETTINGS_FOLDER">
+            <summary>
+            The path to the current user's folder.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.ADDIN_SETTINGS_FILE">
+            <summary>
+            The path to the current user's folder.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.REVIT_VERSION_STR">
+            <summary>
+            The full Revit version as a string.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.REVIT_VERSION_INT">
+            <summary>
+            The major Revit version as an integer.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.REVIT_USERNAME">
+            <summary>
+            The Revit username of the current user.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.WINDOWS_USERNAME">
+            <summary>
+            The Windows username of the current user.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.WINDOWS_MACHINENAME">
+            <summary>
+            The Windows machinename of the current user.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.WINDOWS_PATH_USERFOLDER">
+            <summary>
+            The path to the current user's folder.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.WINDOWS_PATH_APPDATA">
+            <summary>
+            The path to local AppData.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.WINDOWS_PATH_PROGRAMDATA">
+            <summary>
+            The path to ProgramData.
+            </summary>
+        </member>
+        <member name="P:Oi.Globals.DICT_TOOLTIPS">
+            <summary>
+            A dictionary containing all tooltips by command key.
+            </summary>
+        </member>
+        <member name="M:Oi.Globals.RegisterTooltips(System.String)">
+            <summary>
+            Sets up the Global tooltips dictionary.
+            </summary>
+            <param name="resourcePath">The full path to the tooltip resource.</param>
+        </member>
+        <member name="T:Oi.Protection.Fields">
+            <summary>
+            Common field names used by Schemas.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.Fields.Status">
+            <summary>
+            The protection status of an Element.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.Fields.ProtectedBy">
+            <summary>
+            Who protected the Element.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.Fields.ProtectedOn">
+            <summary>
+            When was the Element protected.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.Fields.Reason">
+            <summary>
+            Why was the Element protected.
+            </summary>
+        </member>
+        <member name="T:Oi.Protection.ProtectionFailure">
+            <summary>
+            This failure is raised when Elements protected by a Schema are involved.
+            
+            The changes are rolled back, and this Failure is raised by Revit to the user.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.ProtectionFailure.Guid">
+            <summary>
+            The Guid of the Failure type.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.ProtectionFailure.Id">
+            <summary>
+            The Id of the Failure.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.ProtectionFailure.Definition">
+            <summary>
+            The Definition that is raised.
+            </summary>
+        </member>
+        <member name="T:Oi.Protection.DeleteProtectionInfo">
+            <summary>
+            Provides deletion protection information from the deletion protection schema.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.DeleteProtectionInfo.ProtectionType">
+            <summary>
+            Gets the protection type represented by this instance.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.DeleteProtectionInfo.TryGetProtection(Autodesk.Revit.DB.Element)">
+            <summary>
+            Attempts to read deletion protection information from an element.
+            </summary>
+            <param name="element">The element to inspect.</param>
+            <returns>
+            <see langword="true"/> if the element contains deletion protection
+            information; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Oi.Protection.DeleteProtectionInfo.GetMessage">
+            <summary>
+            Gets a user-facing deletion protection message.
+            </summary>
+            <returns>The deletion protection message.</returns>
+        </member>
+        <member name="T:Oi.Protection.ModifyProtectionInfo">
+            <summary>
+            Provides modification protection information from the modification protection schema.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ModifyProtectionInfo.ProtectionType">
+            <summary>
+            Gets the protection type represented by this instance.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ModifyProtectionInfo.TryGetProtection(Autodesk.Revit.DB.Element)">
+            <summary>
+            Attempts to read modification protection information from an element.
+            </summary>
+            <param name="element">The element to inspect.</param>
+            <returns>
+            <see langword="true"/> if the element contains modification protection
+            information; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Oi.Protection.ModifyProtectionInfo.GetMessage">
+            <summary>
+            Gets a user-facing modification protection message.
+            </summary>
+            <returns>The modification protection message.</returns>
+        </member>
+        <member name="T:Oi.Protection.ProtectionInfo">
+            <summary>
+            Provides a common representation and behaviour for element protection
+            information stored through Revit Extensible Storage.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionInfo.ProtectionType">
+            <summary>
+            Gets the type of protection represented by this instance.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionInfo.IsProtected">
+            <summary>
+            Gets whether the element is currently protected.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionInfo.ProtectedBy">
+            <summary>
+            Gets the user or process that applied the protection.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionInfo.ProtectedOn">
+            <summary>
+            Gets the date and time when the protection was applied.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionInfo.ProtectedOnFormatted">
+            <summary>
+            Gets the protection date and time formatted for display.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionInfo.Reason">
+            <summary>
+            Gets the reason the element was protected.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ProtectionInfo.TryGetProtection(Autodesk.Revit.DB.Element)">
+            <summary>
+            Attempts to acquire protection information from an element.
+            </summary>
+            <param name="element">The element to inspect.</param>
+            <returns>
+            <see langword="true"/> if protection information was successfully
+            acquired; otherwise, <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Oi.Protection.ProtectionInfo.GetProtection(Autodesk.Revit.DB.Element,Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+            <summary>
+            Acquires protection information from an element
+            </summary>
+            <param name="element">The element to inspect.</param>
+            <param name="schema">The Schema to check against.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Oi.Protection.ProtectionInfo.GetMessage">
+            <summary>
+            Gets a human-readable message describing the current protection state.
+            </summary>
+            <returns>The protection status message.</returns>
+        </member>
+        <member name="T:Oi.Protection.DocumentRegistry">
+            <summary>
+            Tracks documents currently opened in the Revit session.
+            
+            Whenever you Protect/Unprotect Elements, add new Documents
+            or Sync/Reload a model, the caches of all SchemaManagers
+            will be refreshed by the Registry.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.DocumentRegistry.Documents">
+            <summary>
+            The opened Documents being registered.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.DocumentRegistry._documentOpenedHandler">
+            <summary>
+            Handler for Document opening event.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.DocumentRegistry._documentCreatedHandler">
+            <summary>
+            Handler for Document creation event.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.DocumentRegistry._documentClosingHandler">
+            <summary>
+            Handler for Document closing event.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.DocumentRegistry.OpenDocuments">
+            <summary>
+            Gets all currently open documents.
+            </summary>
+        </member>
+        <member name="E:Oi.Protection.DocumentRegistry.DocumentOpened">
+            <summary>
+            Raised when a document opens.
+            </summary>
+        </member>
+        <member name="E:Oi.Protection.DocumentRegistry.DocumentCreated">
+            <summary>
+            Raised when a document is created.
+            </summary>
+        </member>
+        <member name="E:Oi.Protection.DocumentRegistry.DocumentClosing">
+            <summary>
+            Raised when a document closes.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.DocumentRegistry.Initialize(Autodesk.Revit.UI.UIApplication)">
+            <summary>
+            Gets all opened Documents (typically on Revit startup, if the user
+            has opened a Document to launch the Application).
+            </summary>
+            <param name="uiApp">The UIApplication.</param>
+        </member>
+        <member name="M:Oi.Protection.DocumentRegistry.Register(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Subscribes Document related event handlers.
+            </summary>
+            <param name="app">The UIControlledApplication.</param>
+        </member>
+        <member name="M:Oi.Protection.DocumentRegistry.Unregister(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Unsubscribes Document related event handlers, effectively
+            disabling the Document Registry process.
+            </summary>
+            <param name="app">The UIControlledApplication.</param>
+        </member>
+        <member name="M:Oi.Protection.DocumentRegistry.OnDocumentOpened(System.Object,Autodesk.Revit.DB.Events.DocumentOpenedEventArgs)">
+            <summary>
+            Raised when a Document opens.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Oi.Protection.DocumentRegistry.OnDocumentCreated(System.Object,Autodesk.Revit.DB.Events.DocumentCreatedEventArgs)">
+            <summary>
+            Raised when a Document is created.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Oi.Protection.DocumentRegistry.OnDocumentClosing(System.Object,Autodesk.Revit.DB.Events.DocumentClosingEventArgs)">
+            <summary>
+            Raised when a Document closes.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="T:Oi.Protection.ManagerRegistry">
+            <summary>
+            Handles all of the SchemaManagers in the session, and provides
+            static/ongoing access to them as instances which allows us to
+            better template them as classes versus if they were all static.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ManagerRegistry.DeleteSchemaManager">
+            <summary>
+            The SchemaManager handling deletion protection.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ManagerRegistry.ModifySchemaManager">
+            <summary>
+            The SchemaManager handling modify protection.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ManagerRegistry.InitializeSchemas">
+            <summary>
+            Establish the Schemas for the first time in a session.
+            Will only create them if they are not assigned yet.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ManagerRegistry.Register(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Registers all SchemaManagers.
+            </summary>
+            <param name="app">The UIControlledApplication.</param>
+        </member>
+        <member name="M:Oi.Protection.ManagerRegistry.Unregister(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Unregisters all SchemaManagers.
+            </summary>
+            <param name="app">The UIControlledApplication.</param>
+        </member>
+        <member name="M:Oi.Protection.ManagerRegistry.RefreshCache(Autodesk.Revit.DB.Document)">
+            <summary>
+            Refreshes all SchemaManager Element/trigger caches.
+            
+            Typically they handle this via the Document registry and
+            their own event subscribers, but this is used on startup
+            of the application to ensure caches are not initially stale.
+            </summary>
+            <param name="doc">The Document to refresh.</param>
+        </member>
+        <member name="T:Oi.Protection.DeleteSchemaManager">
+             <summary>
+             Provides the schema manager configuration for deletion protection.
+            
+             This class specializes the generic
+             <see cref="T:Oi.Protection.SchemaManager`2"/>
+             by supplying:
+            
+             - The protection information type used to store and retrieve deletion
+               protection metadata.
+             - The updater responsible for preventing deletion of protected elements.
+             - The Extensible Storage schema identity.
+             - The Revit change type monitored by the updater.
+            
+             Deletion protection is maintained as a separate protection layer because
+             Revit treats deletion independently from other element changes. A single
+             element may therefore have deletion protection, modification protection,
+             or both applied through separate schemas and updaters.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.DeleteSchemaManager.#ctor">
+             <summary>
+             Creates a new deletion protection schema manager.
+            
+             The schema Guid uniquely identifies this Extensible Storage schema
+             within Revit and must remain unchanged after deployment.
+            
+             The updater listens specifically for element deletion events through
+             <see cref="M:Autodesk.Revit.DB.Element.GetChangeTypeElementDeletion"/>,
+             allowing <see cref="T:Oi.Protection.DeleteProtectionUpdater"/> to intercept deletion
+             attempts involving protected elements.
+             </summary>
+        </member>
+        <member name="T:Oi.Protection.ModifySchemaManager">
+             <summary>
+             Provides the schema manager configuration for modification protection.
+            
+             This class specializes the generic <see cref="T:Oi.Protection.SchemaManager`2"/>
+             by supplying:
+             
+             - The protection information type used to store and retrieve modification
+               protection metadata.
+             - The updater responsible for enforcing modification protection rules.
+             - The Extensible Storage schema identity.
+             - The Revit change type monitored by the updater.
+            
+             Modification protection is intentionally managed separately from other
+             protection systems because Revit treats different change operations
+             independently. A protected element may therefore have multiple protection
+             layers applied through separate schemas and updaters.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.ModifySchemaManager.#ctor">
+             <summary>
+             Creates a new modification protection schema manager.
+            
+             The schema Guid is permanently tied to this protection system and
+             must not be changed after release, otherwise Revit will treat it as
+             a different Extensible Storage schema.
+            
+             The updater listens for any element changes through
+             <see cref="M:Autodesk.Revit.DB.Element.GetChangeTypeAny"/>, allowing the related
+             <see cref="T:Oi.Protection.ModifyProtectionUpdater"/> to evaluate whether a protected
+             element has been modified.
+             </summary>
+        </member>
+        <member name="T:Oi.Protection.SchemaManager`2">
+             <summary>
+             Generic manager responsible for controlling an Extensible Storage schema,
+             the associated protection metadata, the related IUpdater registration,
+             and the runtime cache used for efficient protection checks.
+            
+             This class abstracts the common behaviour between different protection
+             systems (for example deletion protection or modification protection),
+             while allowing each protection type to provide its own:
+             - Protection information model.
+             - IUpdater implementation.
+             - ChangeType trigger.
+             </summary>
+             <typeparam name="TProtectionInfo">
+             The protection information object used to read/write protection metadata.
+             </typeparam>
+             <typeparam name="TProtectionUpdater">
+             The IUpdater implementation responsible for enforcing the protection rule.
+             </typeparam>
+             <remarks>
+             Creates a new schema manager.
+             </remarks>
+             <param name="schemaName">The name of the Extensible Storage schema.</param>
+             <param name="guidString">The Guid string used to identify the schema.</param>
+             <param name="changeType">The Revit change type monitored by the updater.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.#ctor(System.String,System.String,Autodesk.Revit.DB.ChangeType)">
+             <summary>
+             Generic manager responsible for controlling an Extensible Storage schema,
+             the associated protection metadata, the related IUpdater registration,
+             and the runtime cache used for efficient protection checks.
+            
+             This class abstracts the common behaviour between different protection
+             systems (for example deletion protection or modification protection),
+             while allowing each protection type to provide its own:
+             - Protection information model.
+             - IUpdater implementation.
+             - ChangeType trigger.
+             </summary>
+             <typeparam name="TProtectionInfo">
+             The protection information object used to read/write protection metadata.
+             </typeparam>
+             <typeparam name="TProtectionUpdater">
+             The IUpdater implementation responsible for enforcing the protection rule.
+             </typeparam>
+             <remarks>
+             Creates a new schema manager.
+             </remarks>
+             <param name="schemaName">The name of the Extensible Storage schema.</param>
+             <param name="guidString">The Guid string used to identify the schema.</param>
+             <param name="changeType">The Revit change type monitored by the updater.</param>
+        </member>
+        <member name="P:Oi.Protection.SchemaManager`2.SchemaName">
+             <summary>
+             The name assigned to the Extensible Storage schema.
+            
+             Each protection system has its own schema name so that different
+             protection behaviours can coexist independently.
+             </summary>
+        </member>
+        <member name="P:Oi.Protection.SchemaManager`2.SchemaGuid">
+             <summary>
+             The unique identifier of the Extensible Storage schema.
+            
+             Revit uses this Guid internally to identify schemas. It must remain
+             constant once a schema has been released.
+             </summary>
+        </member>
+        <member name="F:Oi.Protection.SchemaManager`2.ProtectedElementsCache">
+             <summary>
+             Cached protection information grouped by Document and ElementId.
+            
+             Revit removes deleted elements from the document database before
+             some events are raised, meaning the Extensible Storage entity may
+             no longer be accessible. This cache preserves enough information
+             to allow reporting and review of protected elements involved in
+             failed operations.
+             </summary>
+        </member>
+        <member name="P:Oi.Protection.SchemaManager`2.UpdaterId">
+             <summary>
+             The identifier of the IUpdater responsible for enforcing this
+             protection system.
+            
+             This is populated during registration and used later when
+             synchronising triggers.
+             </summary>
+        </member>
+        <member name="P:Oi.Protection.SchemaManager`2.ChangeType">
+             <summary>
+             The Revit change type that causes the associated updater to execute.
+            
+             Examples:
+             - Element deletion.
+             - Element modification.
+            
+             Different protection systems can therefore share the same manager
+             while responding to different Revit events.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.Register(Autodesk.Revit.UI.UIControlledApplication,System.Func{Autodesk.Revit.DB.AddInId,`1})">
+             <summary>
+             Registers the protection updater and subscribes the manager
+             to document lifecycle events.
+            
+             The updater itself is created through a factory because different
+             protection implementations require different constructors while
+             sharing the same registration workflow.
+             </summary>
+             <param name="app">The Revit application context.</param>
+             <param name="updaterFactory">Factory method used to create the concrete updater.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.Unregister(Autodesk.Revit.UI.UIControlledApplication)">
+            <summary>
+            Removes the updater registration, event subscriptions,
+            and clears all cached protection information.
+            </summary>
+            <param name="app">The Revit application context.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.OnDocumentOpened(System.Object,Autodesk.Revit.DB.Events.DocumentOpenedEventArgs)">
+             <summary>
+             Refreshes the protection cache when a document is opened.
+            
+             This ensures protection information stored in Extensible Storage
+             is loaded into memory before any updater activity occurs.
+             </summary>
+             <param name="sender">The event sender.</param>
+             <param name="args">The document opened event arguments.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.OnDocumentCreated(System.Object,Autodesk.Revit.DB.Events.DocumentCreatedEventArgs)">
+             <summary>
+             Refreshes the protection cache when a new document is created.
+            
+             Newly created documents will normally have an empty cache, but
+             running through the same workflow ensures consistency.
+             </summary>
+             <param name="sender">The event sender.</param>
+             <param name="args">The document created event arguments.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.OnDocumentClosing(System.Object,Autodesk.Revit.DB.Events.DocumentClosingEventArgs)">
+             <summary>
+             Removes cached protection information when a document closes.
+            
+             Documents cannot be kept as keys indefinitely because the Revit
+             document object is no longer valid after closing.
+             </summary>
+             <param name="sender">The event sender.</param>
+             <param name="args">The document closing event arguments.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.OnDocumentChanged(System.Object,System.EventArgs)">
+             <summary>
+             Refreshes cached protection information after operations that may
+             update the document state externally.
+            
+             Examples:
+             - Synchronising with central.
+             - Reloading latest from central.
+            
+             These operations may introduce changes that affect which elements
+             require active updater triggers.
+             </summary>
+             <param name="sender">The event sender.</param>
+             <param name="args">The event arguments.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.GetOrCreateSchema">
+             <summary>
+             Gets the Extensible Storage schema for this protection system.
+            
+             If the schema does not exist, it is created and configured.
+            
+             Schemas are persisted in the Revit file, so creation only occurs
+             the first time a document requires the schema.
+             </summary>
+             <returns>
+             The existing or newly created schema.
+             </returns>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.ConfigureSchema(Autodesk.Revit.DB.ExtensibleStorage.SchemaBuilder)">
+             <summary>
+             Configures the default fields stored by protection schemas.
+            
+             Derived schema managers can override this method when additional
+             metadata is required.
+             </summary>
+             <param name="builder">The schema builder used to define fields.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.ProtectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.Element},System.String,System.String)">
+             <summary>
+             Protects multiple elements in a batch operation.
+            
+             Triggers are refreshed only once after all elements have been
+             processed. This avoids repeatedly rebuilding updater triggers when
+             applying protection to many elements.
+             </summary>
+             <param name="elements">Elements to protect.</param>
+             <param name="reason">User supplied explanation for the protection.</param>
+             <param name="protectedBy">User responsible for applying protection.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.ProtectElement(Autodesk.Revit.DB.Element,System.String,System.String)">
+             <summary>
+             Protects a single element.
+            
+             This overload refreshes updater triggers immediately.
+             For multiple elements use ProtectElements().
+             </summary>
+             <param name="element">Element to protect.</param>
+             <param name="reason">Reason for protection.</param>
+             <param name="protectedBy">User applying protection.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.ProtectElement(Autodesk.Revit.DB.Element,System.String,System.String,System.Boolean)">
+             <summary>
+             Internal protection implementation.
+            
+             Writes the Extensible Storage entity, updates the runtime cache,
+             and optionally refreshes updater triggers.
+             </summary>
+             <param name="element">Element being protected.</param>
+             <param name="reason">Protection reason.</param>
+             <param name="protectedBy">User applying protection.</param>
+             <param name="refreshTriggers">Whether updater triggers should be rebuilt immediately.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.UnprotectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.Element})">
+             <summary>
+             Removes protection from multiple elements.
+            
+             Trigger rebuilding is performed once after all elements are cleared.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.UnprotectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.ElementId},Autodesk.Revit.DB.Document)">
+             <summary>
+             Removes protection from multiple ElementIds.
+            
+             Elements that no longer exist are ignored because they cannot have
+             their Extensible Storage entity removed.
+             </summary>
+             <param name="elementIds">Element identifiers to unprotect.</param>
+             <param name="doc">Related Revit document.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.UnprotectElement(Autodesk.Revit.DB.Element)">
+            <summary>
+            Removes protection from a single element.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.UnprotectElement(Autodesk.Revit.DB.Element,System.Boolean)">
+             <summary>
+             Internal unprotect implementation.
+            
+             Removes the Extensible Storage entity and clears the runtime cache.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.IsProtected(Autodesk.Revit.DB.Document,Autodesk.Revit.DB.ElementId)">
+             <summary>
+             Determines whether a specific element is currently protected.
+            
+             This uses the cache rather than querying Extensible Storage because
+             this method is expected to be called frequently by updaters.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.GetProtectionReviewItems(Autodesk.Revit.DB.Document,System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.ElementId})">
+            <summary>
+            Retrieves protection information for selected elements.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.RefreshCache(Autodesk.Revit.DB.Document)">
+             <summary>
+             Rebuilds the entire protection cache from Extensible Storage.
+            
+             This is used when documents open or external changes occur.
+             </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.GetProtectedElementIds(Autodesk.Revit.DB.Document)">
+            <summary>
+            Returns all protected element identifiers for a document.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.GetOrCreateProtectionCache(Autodesk.Revit.DB.Document)">
+            <summary>
+            Retrieves an existing cache for a document or creates one.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.RefreshIUpdaterTriggers">
+             <summary>
+             Rebuilds all updater triggers for every open document.
+            
+             Revit updater triggers are not automatically aware of changes to
+             protected elements, so whenever protection state changes this method
+             removes all triggers and recreates them from the current cache.
+             </summary>
+        </member>
+        <member name="T:Oi.Protection.Status">
+            <summary>
+            Protection status flag values.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.Status.Protected">
+            <summary>
+            Protected value.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.Status.Unprotected">
+            <summary>
+            Unprotected value.
+            </summary>
+        </member>
+        <member name="T:Oi.Protection.DeleteProtectionUpdater">
+            <summary>
+            An <see cref="T:IUpdater"/> that prevents protected elements from being deleted.
+            
+            If a protected element is included in a delete operation, a bypass opportunity
+            will be available to the user. If this is failed, the change will be rolled back.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.DeleteProtectionUpdater.Guid">
+            <summary>
+            The Guid for this Updater.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.DeleteProtectionUpdater.#ctor(Autodesk.Revit.DB.AddInId)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="addInId">The related AddinIn of the Updater.</param>
+        </member>
+        <member name="M:Oi.Protection.DeleteProtectionUpdater.Execute(Autodesk.Revit.DB.UpdaterData)">
+            <summary>
+            Executes when Revit processes a related updater event.
+            
+            In sequence:
+            - Presence of protected Elements is checked
+            - A review window for any protected Elements is shown
+            - The user may attempt to bypass with a code
+            - If they fail, the change is rolled back
+            - If they succeed, the change is permitted
+            </summary>
+            <param name="data">Information about the update event.</param>
+        </member>
+        <member name="M:Oi.Protection.DeleteProtectionUpdater.GetUpdaterName">
+            <summary>
+            Gets the display name of this Updater.
+            </summary>
+            <returns>The updater name.</returns>
+        </member>
+        <member name="M:Oi.Protection.DeleteProtectionUpdater.GetAdditionalInformation">
+            <summary>
+            Gets a description of the Updater's purpose.
+            </summary>
+            <returns>A description of the Updater.</returns>
+        </member>
+        <member name="T:Oi.Protection.ModifyProtectionUpdater">
+            <summary>
+            An <see cref="T:IUpdater"/> that prevents protected elements from being modified.
+            
+            If a protected element is included in a change operation, a bypass opportunity
+            will be available to the user. If this is failed, the change will be rolled back.
+            </summary>
+        </member>
+        <member name="F:Oi.Protection.ModifyProtectionUpdater.Guid">
+            <summary>
+            The Guid for this Updater.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ModifyProtectionUpdater.#ctor(Autodesk.Revit.DB.AddInId)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="addInId">The related AddinIn of the Updater.</param>
+        </member>
+        <member name="M:Oi.Protection.ModifyProtectionUpdater.Execute(Autodesk.Revit.DB.UpdaterData)">
+            <summary>
+            Executes when Revit processes a related updater event.
+            
+            In sequence:
+            - Presence of protected Elements is checked
+            - A review window for any protected Elements is shown
+            - The user may attempt to bypass with a code
+            - If they fail, the change is rolled back
+            - If they succeed, the change is permitted
+            </summary>
+            <param name="data">Information about the update event.</param>
+        </member>
+        <member name="M:Oi.Protection.ModifyProtectionUpdater.GetUpdaterName">
+            <summary>
+            Gets the display name of this Updater.
+            </summary>
+            <returns>The Updater name.</returns>
+        </member>
+        <member name="M:Oi.Protection.ModifyProtectionUpdater.GetAdditionalInformation">
+            <summary>
+            Gets a description of the Updater's purpose.
+            </summary>
+            <returns>A description of the Updater.</returns>
+        </member>
+        <member name="T:Oi.Protection.ProtectionUpdater">
+            <summary>
+            An <see cref="T:IUpdater"/> that prevents protected elements.
+            
+            If a protected element is included in a related operation, a process
+            specific to that SchemeManager will be undertaken to determine how
+            to handle the changes (typically a bypass or rollback).
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ProtectionUpdater.#ctor(Autodesk.Revit.DB.AddInId,System.Guid)">
+            <summary>
+            Base constructor.
+            </summary>
+            <param name="addInId">The Id of the related AddIn.</param>
+            <param name="updaterGuid">The Guid of the Updater.</param>
+        </member>
+        <member name="P:Oi.Protection.ProtectionUpdater.AddInId">
+            <summary>
+            The Add-In identifier that owns this Updater.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionUpdater.UpdaterId">
+            <summary>
+            The unique identifier for this Updater.
+            </summary>
+        </member>
+        <member name="P:Oi.Protection.ProtectionUpdater.UpdaterGuid">
+            <summary>
+            The Guid for this Updater.
+            </summary>
+        </member>
+        <member name="M:Oi.Protection.ProtectionUpdater.Execute(Autodesk.Revit.DB.UpdaterData)">
+            <summary>
+            Executes when Revit processes a related updater event.
+            
+            Behavior is defined at the specific Updater's level.
+            </summary>
+            <param name="data">Information about the update event.</param>
+        </member>
+        <member name="M:Oi.Protection.ProtectionUpdater.GetUpdaterId">
+            <summary>
+            Gets the unique identifier of this Updater.
+            </summary>
+            <returns>The updater identifier.</returns>
+        </member>
+        <member name="M:Oi.Protection.ProtectionUpdater.GetUpdaterName">
+            <summary>
+            Gets the display name of this Updater.
+            </summary>
+            <returns>The updater name.</returns>
+        </member>
+        <member name="M:Oi.Protection.ProtectionUpdater.GetAdditionalInformation">
+            <summary>
+            Gets a description of the Updater's purpose.
+            </summary>
+            <returns>A description of the Updater.</returns>
+        </member>
+        <member name="M:Oi.Protection.ProtectionUpdater.GetChangePriority">
+            <summary>
+            Gets the priority used by Revit when scheduling this Updater.
+            </summary>
+            <returns>The Updater change priority.</returns>
+        </member>
+        <member name="T:Oi.Resources.Files.Tooltips">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Admin">
+            <summary>
+              Looks up a localized string similar to Tools related to administrating access to Oi&apos;s Tab, and permitting user&apos;s to bypass protection when required..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Admin_About">
+            <summary>
+              Looks up a localized string similar to Displays basic information about the AddIn, and provides a means to directly access the related project GitHub..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Admin_GetAdminCode">
+            <summary>
+              Looks up a localized string similar to Provides a form to enter a user&apos;s name and get the corresponding request response code that Oi will look for in that user&apos;s Local AppData folder when Revit launches..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Admin_GetBypassCode">
+             <summary>
+               Looks up a localized string similar to Provides a form to enter a bypass request code, which will generate a response code that can be used to enable the protection bypass.
+            
+            Note that this code will be unique to the Elements involved in the request, so will only work for the specific bypass being attempted..
+             </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Admin_SelfAppointAsAdmin">
+             <summary>
+               Looks up a localized string similar to Registers you as an Administrator, which will write a request response code to your Local AppData folder. When Revit boots up, Oi will look at this folder to determine if a user is an Administrator.
+            
+            If this file is not found with a valid code, Oi will load in low trust mode without access to its Tools ribbon..
+             </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Delete">
+            <summary>
+              Looks up a localized string similar to Tools related to protecting Elements from deletion..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Delete_ProtectionReview">
+             <summary>
+               Looks up a localized string similar to Displays a form that provides information about protected Elements in the current Document, including when, who and why the Elements were protected.
+            
+            This form will be presented to users if they attempt to delete protected Elements as well..
+             </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Delete_ProtectSelectedElements">
+            <summary>
+              Looks up a localized string similar to Applies protection to any selected Element(s) without it currently of this type. You will be prompted to also provide a basic summary of the purpose of protection, so that end users have a better understanding of why they may encounter prevention mechanisms in future..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Delete_SelectProtectedElements">
+            <summary>
+              Looks up a localized string similar to Selects all Elements in the current Document that currently have protection applied from being deleted..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Delete_UnprotectSelectedElements">
+            <summary>
+              Looks up a localized string similar to Removes protection from any selected Element(s) with it currently of this type. This tool can only be ran by administrators as it does not trigger a bypass code to be validated unlike if an end user tries to bypass protection when offered..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Modify">
+            <summary>
+              Looks up a localized string similar to Tools related to protecting Elements from modification. Note that Elements protected in this way can still be deleted unless they also have Delete protection applied..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Modify_ProtectionReview">
+             <summary>
+               Looks up a localized string similar to Displays a form that provides information about protected Elements in the current Document, including when, who and why the Elements were protected.
+            
+            This form will be presented to users if they attempt to modify protected Elements as well..
+             </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Modify_ProtectSelectedElements">
+            <summary>
+              Looks up a localized string similar to Applies protection to any selected Element(s) without it currently of this type. You will be prompted to also provide a basic summary of the purpose of protection, so that end users have a better understanding of why they may encounter prevention mechanisms in future..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Modify_SelectProtectedElements">
+            <summary>
+              Looks up a localized string similar to Selects all Elements in the current Document that currently have protection applied from being modified..
+            </summary>
+        </member>
+        <member name="P:Oi.Resources.Files.Tooltips.Modify_UnprotectSelectedElements">
+            <summary>
+              Looks up a localized string similar to Removes protection from any selected Element(s) with it currently of this type. This tool can only be ran by administrators as it does not trigger a bypass code to be validated unlike if an end user tries to bypass protection when offered..
+            </summary>
+        </member>
+        <member name="T:Oi.Utilities.Data_Utils">
+            <summary>
+            Static methods container related to Data containers.
+            </summary>
+        </member>
+        <member name="M:Oi.Utilities.Data_Utils.GetDictValue(System.Collections.Generic.Dictionary{System.String,System.String},System.String,System.String)">
+            <summary>
+            Returns a value based on a key from a dictionary.
+            </summary>
+            <param name="dictionary">The dictionary of keys/values to search.</param>
+            <param name="key">The key to search for.</param>
+            <param name="defaultValue">The value to return if no key is found.</param>
+            <returns>The related tooltip, if found.</returns>
+        </member>
+        <member name="T:Oi.Utilities.File_Utils">
+            <summary>
+            Static methods container related to Files.
+            </summary>
+        </member>
+        <member name="M:Oi.Utilities.File_Utils.LinkIsAccessible(System.String)">
+            <summary>
+            Used to verify if a URL is valid (will open).
+            </summary>
+            <param name="linkPath">The path, typically a URL.</param>
+            <returns>A Boolean.</returns>
+        </member>
+        <member name="M:Oi.Utilities.File_Utils.OpenLinkPath(System.String)">
+            <summary>
+            Attempts to open a link in the default browser.
+            </summary>
+            <param name="linkPath">The path, typically a URL.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="M:Oi.Utilities.File_Utils.FileIsAccessible(System.String)">
+            <summary>
+            Runs an accessibility check on a file path.
+            </summary>
+            <param name="filePath">The path.</param>
+            <returns>A Boolean.</returns>
+        </member>
+        <member name="M:Oi.Utilities.File_Utils.ReadFileAsRows(System.String,System.Boolean)">
+            <summary>
+            Returns the contents of a file, by row.
+            </summary>
+            <param name="filePath">The file path to read.</param>
+            <param name="skipEmpty">Do not write empty rows.</param>
+            <returns>A list of strings.</returns>
+        </member>
+        <member name="M:Oi.Utilities.File_Utils.WriteListToFile(System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Writes a list of strings to a file.
+            </summary>
+            <param name="filePath">The file path to read.</param>
+            <param name="dataRows">A list of strings to write.</param>
+            <returns>A Result.</returns>
+        </member>
+        <member name="T:Oi.Utilities.Ribbon_Utils">
+            <summary>
+            Static methods container related to the Ribbon.
+            </summary>
+        </member>
+        <member name="M:Oi.Utilities.Ribbon_Utils.CommandClassToBaseName(System.String)">
+            <summary>
+            Converts a command class to a base name for tooltip/icon finding.
+            </summary>
+            <param name="commandClass">The name of the command class.</param>
+            <returns>A string.</returns>
+        </member>
+        <member name="M:Oi.Utilities.Ribbon_Utils.NewPushButtonData``1(System.String)">
+            <summary>
+            Creates PushButtonData (to stack, generally).
+            </summary>
+            <typeparam name="CommandClass">The related Command class.</typeparam>
+            <param name="buttonName">The name for the button.</param>
+            <returns>A PushButtonData object</returns>
+        </member>
+        <member name="M:Oi.Utilities.Ribbon_Utils.NewPulldownButtonData(System.String,System.String)">
+            <summary>
+            Creates PulldownButtonData (to stack, generally).
+            </summary>
+            <param name="buttonName">The name for the button.</param>
+            <param name="nameSpace">The namespace the commands relate to.</param>
+            <returns>A PulldownButtonData object.</returns>
+        </member>
+        <member name="M:Oi.Utilities.Ribbon_Utils.GetImageSource(System.String,System.Int32,System.String)">
+            <summary>
+            Prepares an image source from a Png resource.
+            </summary>
+            <param name="iconName">The name of the icon (without format, resolution).</param>
+            <param name="resolution">The resolution suffix (16 or 32, typically).</param>
+            <param name="suffix">An additional suffix (optional).</param>
+            <returns>An ImageSource object.</returns>
+        </member>
+    </members>
+</doc>
