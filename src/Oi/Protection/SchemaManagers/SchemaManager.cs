@@ -178,9 +178,6 @@ namespace Oi.Protection
         private void OnDocumentClosing(object sender, DocumentClosingEventArgs args)
         {
             ProtectedElementsCache.Remove(args.Document);
-
-            // Rebuild triggers because the set of open documents has changed.
-            RefreshIUpdaterTriggers();
         }
 
         /// <summary>
@@ -268,9 +265,10 @@ namespace Oi.Protection
         /// applying protection to many elements.
         /// </summary>
         /// <param name="elements">Elements to protect.</param>
+        /// <param name="doc">Document the Elements are in.</param>
         /// <param name="reason">User supplied explanation for the protection.</param>
         /// <param name="protectedBy">User responsible for applying protection.</param>
-        public void ProtectElements(IEnumerable<Element> elements, string reason = null, string protectedBy = null)
+        public void ProtectElements(IEnumerable<Element> elements, Document doc, string reason = null, string protectedBy = null)
         {
             List<Element> elementList = elements.ToList();
 
@@ -283,7 +281,7 @@ namespace Oi.Protection
                     false);
             }
 
-            RefreshIUpdaterTriggers();
+            RefreshIUpdaterTriggers(doc);
         }
 
         /// <summary>
@@ -368,7 +366,7 @@ namespace Oi.Protection
 
             if (refreshTriggers)
             {
-                RefreshIUpdaterTriggers();
+                RefreshIUpdaterTriggers(element.Document);
             }
         }
 
@@ -378,7 +376,7 @@ namespace Oi.Protection
         /// Trigger rebuilding is performed once after all elements are cleared.
         /// </summary>
         public void UnprotectElements(
-            IEnumerable<Element> elements)
+            IEnumerable<Element> elements, Document doc)
         {
             List<Element> elementList = elements.ToList();
 
@@ -387,7 +385,7 @@ namespace Oi.Protection
                 UnprotectElement(element, false);
             }
 
-            RefreshIUpdaterTriggers();
+            RefreshIUpdaterTriggers(doc);
         }
 
         /// <summary>
@@ -405,7 +403,7 @@ namespace Oi.Protection
                 .Where(element => element != null)
                 .ToList();
 
-            UnprotectElements(elements);
+            UnprotectElements(elements, doc);
         }
 
         /// <summary>
@@ -433,7 +431,7 @@ namespace Oi.Protection
 
             if (refreshTriggers)
             {
-                RefreshIUpdaterTriggers();
+                RefreshIUpdaterTriggers(element.Document);
             }
         }
 
@@ -544,7 +542,7 @@ namespace Oi.Protection
 
             ProtectedElementsCache[doc] = cache;
 
-            RefreshIUpdaterTriggers();
+            RefreshIUpdaterTriggers(doc);
         }
 
         /// <summary>
@@ -579,31 +577,24 @@ namespace Oi.Protection
         /// protected elements, so whenever protection state changes this method
         /// removes all triggers and recreates them from the current cache.
         /// </summary>
-        private void RefreshIUpdaterTriggers()
+        private void RefreshIUpdaterTriggers(Document doc)
         {
             if (UpdaterId == null)
             {
                 return;
             }
 
-            UpdaterRegistry.RemoveAllTriggers(UpdaterId);
+            UpdaterRegistry.RemoveDocumentTriggers(UpdaterId, doc);
 
-            foreach (Document document in DocumentRegistry.OpenDocuments)
+            IReadOnlyCollection<ElementId> ids = GetProtectedElementIds(doc);
+
+            if (ids.Count > 0)
             {
-                IReadOnlyCollection<ElementId> ids =
-                    GetProtectedElementIds(document);
-
-
-                if (ids.Count == 0)
-                {
-                    continue;
-                }
-
                 UpdaterRegistry.AddTrigger(
-                    UpdaterId,
-                    document,
-                    ids.ToList(),
-                    ChangeType);
+                UpdaterId,
+                doc,
+                ids.ToList(),
+                ChangeType);
             }
         }
     }

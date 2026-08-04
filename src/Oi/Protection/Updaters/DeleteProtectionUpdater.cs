@@ -56,11 +56,13 @@
 
                     // Change goes ahead (deletion)
                 }
-
-                // Failure handled if bypass not taken successfully
-                var fm = new FailureMessage(ProtectionFailure.Id);
-                fm.SetFailingElements(protectedIds);
-                doc.PostFailure(fm);
+                else
+                {
+                    // Failure handled if bypass not taken successfully
+                    var fm = new FailureMessage(ProtectionFailure.Id);
+                    fm.SetFailingElements(protectedIds);
+                    doc.PostFailure(fm);
+                }
             }
         }
 
