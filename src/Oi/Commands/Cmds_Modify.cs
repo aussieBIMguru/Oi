@@ -115,7 +115,7 @@
                 t.Start();
 
                 Protection.ManagerRegistry.ModifySchemaManager.ProtectElements(unprotectedElements,
-                    reason: reason ?? "No reason provided.");
+                    doc, reason: reason ?? "No reason provided.");
 
                 t.Commit();
             }
@@ -169,7 +169,7 @@
             {
                 t.Start();
 
-                Protection.ManagerRegistry.ModifySchemaManager.UnprotectElements(protectedElements);
+                Protection.ManagerRegistry.ModifySchemaManager.UnprotectElements(protectedElements, doc);
 
                 t.Commit();
             }

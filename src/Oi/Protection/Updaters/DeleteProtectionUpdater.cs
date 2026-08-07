@@ -32,6 +32,12 @@
         /// <param name="data">Information about the update event.</param>
         public override void Execute(UpdaterData data)
         {
+            // Permit changes if the Document is changing due to Sync or Reload
+            if (ManagerRegistry.DeleteSchemaManager.IsSyncingOrReloading)
+            {
+                return;
+            }
+
             // Get the Document being affected
             Document doc = data.GetDocument();
 
@@ -56,11 +62,13 @@
 
                     // Change goes ahead (deletion)
                 }
-
-                // Failure handled if bypass not taken successfully
-                var fm = new FailureMessage(ProtectionFailure.Id);
-                fm.SetFailingElements(protectedIds);
-                doc.PostFailure(fm);
+                else
+                {
+                    // Failure handled if bypass not taken successfully
+                    var fm = new FailureMessage(ProtectionFailure.Id);
+                    fm.SetFailingElements(protectedIds);
+                    doc.PostFailure(fm);
+                }
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.DB.ExtensibleStorage;
+using Autodesk.Revit.UI.Events;
 
 namespace Oi.Protection
 {
@@ -73,6 +74,15 @@ namespace Oi.Protection
         public UpdaterId UpdaterId { get; set; }
 
         /// <summary>
+        /// Tracks if the Updater is catching up to Central.
+        /// 
+        /// This is needed as Revit thinks when Elements are removed during
+        /// these operations, that they are being deleted, and will block the
+        /// first Sync/Reload (but not the second).
+        /// </summary>
+        public bool IsSyncingOrReloading = false;
+
+        /// <summary>
         /// The Revit change type that causes the associated updater to execute.
         ///
         /// Examples:
@@ -113,6 +123,11 @@ namespace Oi.Protection
             DocumentRegistry.DocumentCreated += OnDocumentCreated;
             DocumentRegistry.DocumentClosing += OnDocumentClosing;
 
+            // Handle temporary Updater change allowances
+            app.ControlledApplication.DocumentSynchronizingWithCentral += OnDocumentChanging;
+            app.ControlledApplication.DocumentReloadingLatest += OnDocumentChanging;
+
+            // Handle recacheing of protected Elements
             app.ControlledApplication.DocumentSynchronizedWithCentral += OnDocumentChanged;
             app.ControlledApplication.DocumentReloadedLatest += OnDocumentChanged;
         }
@@ -134,6 +149,8 @@ namespace Oi.Protection
             DocumentRegistry.DocumentCreated -= OnDocumentCreated;
             DocumentRegistry.DocumentClosing -= OnDocumentClosing;
 
+            app.ControlledApplication.DocumentSynchronizingWithCentral -= OnDocumentChanging;
+            app.ControlledApplication.DocumentReloadingLatest -= OnDocumentChanging;
             app.ControlledApplication.DocumentSynchronizedWithCentral -= OnDocumentChanged;
             app.ControlledApplication.DocumentReloadedLatest -= OnDocumentChanged;
 
@@ -178,9 +195,50 @@ namespace Oi.Protection
         private void OnDocumentClosing(object sender, DocumentClosingEventArgs args)
         {
             ProtectedElementsCache.Remove(args.Document);
+        }
 
-            // Rebuild triggers because the set of open documents has changed.
-            RefreshIUpdaterTriggers();
+        /// <summary>
+        /// Flags that the Document is about to receive changes.
+        ///
+        /// Examples:
+        /// - Synchronising with central.
+        /// - Reloading latest from central.
+        ///
+        /// These operations may make Revit think Elements that were
+        /// deleted by other users are being changed, which means we must
+        /// tell the related Updater this is permitted temporarily.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event arguments.</param>
+        private void OnDocumentChanging(object sender, EventArgs args)
+        {
+            switch (args)
+            {
+                case DocumentSynchronizingWithCentralEventArgs sync:
+                    IsSyncingOrReloading = true;
+                    Globals.UICTLAPP.Idling += OnDocumentChangesCompleted;
+                    break;
+
+                case DocumentReloadingLatestEventArgs reload:
+                    IsSyncingOrReloading = true;
+                    Globals.UICTLAPP.Idling += OnDocumentChangesCompleted;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// An idling event subscriber that lets the Document know it has
+        /// finished changing due to Sync/Reload changes from other users.
+        /// 
+        /// This will reactive the Updater protection, and other subscribers
+        /// will have already updated triggers/caches when this runs.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event arguments.</param>
+        private void OnDocumentChangesCompleted(object sender, IdlingEventArgs args)
+        {
+            Globals.UICTLAPP.Idling -= OnDocumentChangesCompleted;
+            IsSyncingOrReloading = false;
         }
 
         /// <summary>
@@ -188,8 +246,8 @@ namespace Oi.Protection
         /// update the document state externally.
         ///
         /// Examples:
-        /// - Synchronising with central.
-        /// - Reloading latest from central.
+        /// - Synchronisation with central has finished.
+        /// - Reload latest from central has finished.
         ///
         /// These operations may introduce changes that affect which elements
         /// require active updater triggers.
@@ -268,9 +326,10 @@ namespace Oi.Protection
         /// applying protection to many elements.
         /// </summary>
         /// <param name="elements">Elements to protect.</param>
+        /// <param name="doc">Document the Elements are in.</param>
         /// <param name="reason">User supplied explanation for the protection.</param>
         /// <param name="protectedBy">User responsible for applying protection.</param>
-        public void ProtectElements(IEnumerable<Element> elements, string reason = null, string protectedBy = null)
+        public void ProtectElements(IEnumerable<Element> elements, Document doc, string reason = null, string protectedBy = null)
         {
             List<Element> elementList = elements.ToList();
 
@@ -283,7 +342,7 @@ namespace Oi.Protection
                     false);
             }
 
-            RefreshIUpdaterTriggers();
+            RefreshIUpdaterTriggers(doc);
         }
 
         /// <summary>
@@ -368,7 +427,7 @@ namespace Oi.Protection
 
             if (refreshTriggers)
             {
-                RefreshIUpdaterTriggers();
+                RefreshIUpdaterTriggers(element.Document);
             }
         }
 
@@ -378,7 +437,7 @@ namespace Oi.Protection
         /// Trigger rebuilding is performed once after all elements are cleared.
         /// </summary>
         public void UnprotectElements(
-            IEnumerable<Element> elements)
+            IEnumerable<Element> elements, Document doc)
         {
             List<Element> elementList = elements.ToList();
 
@@ -387,7 +446,7 @@ namespace Oi.Protection
                 UnprotectElement(element, false);
             }
 
-            RefreshIUpdaterTriggers();
+            RefreshIUpdaterTriggers(doc);
         }
 
         /// <summary>
@@ -405,7 +464,7 @@ namespace Oi.Protection
                 .Where(element => element != null)
                 .ToList();
 
-            UnprotectElements(elements);
+            UnprotectElements(elements, doc);
         }
 
         /// <summary>
@@ -433,7 +492,7 @@ namespace Oi.Protection
 
             if (refreshTriggers)
             {
-                RefreshIUpdaterTriggers();
+                RefreshIUpdaterTriggers(element.Document);
             }
         }
 
@@ -544,7 +603,7 @@ namespace Oi.Protection
 
             ProtectedElementsCache[doc] = cache;
 
-            RefreshIUpdaterTriggers();
+            RefreshIUpdaterTriggers(doc);
         }
 
         /// <summary>
@@ -579,31 +638,24 @@ namespace Oi.Protection
         /// protected elements, so whenever protection state changes this method
         /// removes all triggers and recreates them from the current cache.
         /// </summary>
-        private void RefreshIUpdaterTriggers()
+        private void RefreshIUpdaterTriggers(Document doc)
         {
             if (UpdaterId == null)
             {
                 return;
             }
 
-            UpdaterRegistry.RemoveAllTriggers(UpdaterId);
+            UpdaterRegistry.RemoveDocumentTriggers(UpdaterId, doc);
 
-            foreach (Document document in DocumentRegistry.OpenDocuments)
+            IReadOnlyCollection<ElementId> ids = GetProtectedElementIds(doc);
+
+            if (ids.Count > 0)
             {
-                IReadOnlyCollection<ElementId> ids =
-                    GetProtectedElementIds(document);
-
-
-                if (ids.Count == 0)
-                {
-                    continue;
-                }
-
                 UpdaterRegistry.AddTrigger(
-                    UpdaterId,
-                    document,
-                    ids.ToList(),
-                    ChangeType);
+                UpdaterId,
+                doc,
+                ids.ToList(),
+                ChangeType);
             }
         }
     }
