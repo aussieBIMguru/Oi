@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.DB.ExtensibleStorage;
+using Autodesk.Revit.UI.Events;
 
 namespace Oi.Protection
 {
@@ -73,6 +74,15 @@ namespace Oi.Protection
         public UpdaterId UpdaterId { get; set; }
 
         /// <summary>
+        /// Tracks if the Updater is catching up to Central.
+        /// 
+        /// This is needed as Revit thinks when Elements are removed during
+        /// these operations, that they are being deleted, and will block the
+        /// first Sync/Reload (but not the second).
+        /// </summary>
+        public bool IsSyncingOrReloading = false;
+
+        /// <summary>
         /// The Revit change type that causes the associated updater to execute.
         ///
         /// Examples:
@@ -113,6 +123,11 @@ namespace Oi.Protection
             DocumentRegistry.DocumentCreated += OnDocumentCreated;
             DocumentRegistry.DocumentClosing += OnDocumentClosing;
 
+            // Handle temporary Updater change allowances
+            app.ControlledApplication.DocumentSynchronizingWithCentral += OnDocumentChanging;
+            app.ControlledApplication.DocumentReloadingLatest += OnDocumentChanging;
+
+            // Handle recacheing of protected Elements
             app.ControlledApplication.DocumentSynchronizedWithCentral += OnDocumentChanged;
             app.ControlledApplication.DocumentReloadedLatest += OnDocumentChanged;
         }
@@ -134,6 +149,8 @@ namespace Oi.Protection
             DocumentRegistry.DocumentCreated -= OnDocumentCreated;
             DocumentRegistry.DocumentClosing -= OnDocumentClosing;
 
+            app.ControlledApplication.DocumentSynchronizingWithCentral -= OnDocumentChanging;
+            app.ControlledApplication.DocumentReloadingLatest -= OnDocumentChanging;
             app.ControlledApplication.DocumentSynchronizedWithCentral -= OnDocumentChanged;
             app.ControlledApplication.DocumentReloadedLatest -= OnDocumentChanged;
 
@@ -181,12 +198,56 @@ namespace Oi.Protection
         }
 
         /// <summary>
-        /// Refreshes cached protection information after operations that may
-        /// update the document state externally.
+        /// Flags that the Document is about to receive changes.
         ///
         /// Examples:
         /// - Synchronising with central.
         /// - Reloading latest from central.
+        ///
+        /// These operations may make Revit think Elements that were
+        /// deleted by other users are being changed, which means we must
+        /// tell the related Updater this is permitted temporarily.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event arguments.</param>
+        private void OnDocumentChanging(object sender, EventArgs args)
+        {
+            switch (args)
+            {
+                case DocumentSynchronizingWithCentralEventArgs sync:
+                    IsSyncingOrReloading = true;
+                    Globals.UICTLAPP.Idling += OnDocumentChangesCompleted;
+                    break;
+
+                case DocumentReloadingLatestEventArgs reload:
+                    IsSyncingOrReloading = true;
+                    Globals.UICTLAPP.Idling += OnDocumentChangesCompleted;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// An idling event subscriber that lets the Document know it has
+        /// finished changing due to Sync/Reload changes from other users.
+        /// 
+        /// This will reactive the Updater protection, and other subscribers
+        /// will have already updated triggers/caches when this runs.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event arguments.</param>
+        private void OnDocumentChangesCompleted(object sender, IdlingEventArgs args)
+        {
+            Globals.UICTLAPP.Idling -= OnDocumentChangesCompleted;
+            IsSyncingOrReloading = false;
+        }
+
+        /// <summary>
+        /// Refreshes cached protection information after operations that may
+        /// update the document state externally.
+        ///
+        /// Examples:
+        /// - Synchronisation with central has finished.
+        /// - Reload latest from central has finished.
         ///
         /// These operations may introduce changes that affect which elements
         /// require active updater triggers.

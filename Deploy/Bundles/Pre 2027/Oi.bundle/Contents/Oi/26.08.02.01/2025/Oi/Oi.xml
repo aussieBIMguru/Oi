@@ -1586,6 +1586,15 @@
              synchronising triggers.
              </summary>
         </member>
+        <member name="F:Oi.Protection.SchemaManager`2.IsSyncingOrReloading">
+            <summary>
+            Tracks if the Updater is catching up to Central.
+            
+            This is needed as Revit thinks when Elements are removed during
+            these operations, that they are being deleted, and will block the
+            first Sync/Reload (but not the second).
+            </summary>
+        </member>
         <member name="P:Oi.Protection.SchemaManager`2.ChangeType">
              <summary>
              The Revit change type that causes the associated updater to execute.
@@ -1647,14 +1656,40 @@
              <param name="sender">The event sender.</param>
              <param name="args">The document closing event arguments.</param>
         </member>
+        <member name="M:Oi.Protection.SchemaManager`2.OnDocumentChanging(System.Object,System.EventArgs)">
+             <summary>
+             Flags that the Document is about to receive changes.
+            
+             Examples:
+             - Synchronising with central.
+             - Reloading latest from central.
+            
+             These operations may make Revit think Elements that were
+             deleted by other users are being changed, which means we must
+             tell the related Updater this is permitted temporarily.
+             </summary>
+             <param name="sender">The event sender.</param>
+             <param name="args">The event arguments.</param>
+        </member>
+        <member name="M:Oi.Protection.SchemaManager`2.OnDocumentChangesCompleted(System.Object,Autodesk.Revit.UI.Events.IdlingEventArgs)">
+            <summary>
+            An idling event subscriber that lets the Document know it has
+            finished changing due to Sync/Reload changes from other users.
+            
+            This will reactive the Updater protection, and other subscribers
+            will have already updated triggers/caches when this runs.
+            </summary>
+            <param name="sender">The event sender.</param>
+            <param name="args">The event arguments.</param>
+        </member>
         <member name="M:Oi.Protection.SchemaManager`2.OnDocumentChanged(System.Object,System.EventArgs)">
              <summary>
              Refreshes cached protection information after operations that may
              update the document state externally.
             
              Examples:
-             - Synchronising with central.
-             - Reloading latest from central.
+             - Synchronisation with central has finished.
+             - Reload latest from central has finished.
             
              These operations may introduce changes that affect which elements
              require active updater triggers.
@@ -1684,7 +1719,7 @@
              </summary>
              <param name="builder">The schema builder used to define fields.</param>
         </member>
-        <member name="M:Oi.Protection.SchemaManager`2.ProtectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.Element},System.String,System.String)">
+        <member name="M:Oi.Protection.SchemaManager`2.ProtectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.Element},Autodesk.Revit.DB.Document,System.String,System.String)">
              <summary>
              Protects multiple elements in a batch operation.
             
@@ -1693,6 +1728,7 @@
              applying protection to many elements.
              </summary>
              <param name="elements">Elements to protect.</param>
+             <param name="doc">Document the Elements are in.</param>
              <param name="reason">User supplied explanation for the protection.</param>
              <param name="protectedBy">User responsible for applying protection.</param>
         </member>
@@ -1719,7 +1755,7 @@
              <param name="protectedBy">User applying protection.</param>
              <param name="refreshTriggers">Whether updater triggers should be rebuilt immediately.</param>
         </member>
-        <member name="M:Oi.Protection.SchemaManager`2.UnprotectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.Element})">
+        <member name="M:Oi.Protection.SchemaManager`2.UnprotectElements(System.Collections.Generic.IEnumerable{Autodesk.Revit.DB.Element},Autodesk.Revit.DB.Document)">
              <summary>
              Removes protection from multiple elements.
             
@@ -1795,7 +1831,7 @@
             Retrieves an existing cache for a document or creates one.
             </summary>
         </member>
-        <member name="M:Oi.Protection.SchemaManager`2.RefreshIUpdaterTriggers">
+        <member name="M:Oi.Protection.SchemaManager`2.RefreshIUpdaterTriggers(Autodesk.Revit.DB.Document)">
              <summary>
              Rebuilds all updater triggers for every open document.
             

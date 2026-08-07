@@ -32,6 +32,12 @@
         /// <param name="data">Information about the update event.</param>
         public override void Execute(UpdaterData data)
         {
+            // Permit changes if the Document is changing due to Sync or Reload
+            if (ManagerRegistry.DeleteSchemaManager.IsSyncingOrReloading)
+            {
+                return;
+            }
+
             // Get the Document being affected
             Document doc = data.GetDocument();
 

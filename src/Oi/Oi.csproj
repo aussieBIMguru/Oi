@@ -18,8 +18,8 @@
 		</Configurations>
 
 		<!-- Common addin metadata -->
-		<AssemblyVersion>26.08.01.01</AssemblyVersion>
-		<FileVersion>26.08.01.01</FileVersion>
+		<AssemblyVersion>26.08.02.01</AssemblyVersion>
+		<FileVersion>26.08.02.01</FileVersion>
 		<Company>Aussie BIM Guru</Company>
 		<RootNamespace>Oi</RootNamespace>
 		<AssemblyName>Oi</AssemblyName>
